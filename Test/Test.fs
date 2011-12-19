@@ -8,11 +8,10 @@ type innerParser () = class
     [<GLRAttribute>]
     member this.ws = spaces
     [<GLRAttribute>]
-    member this.ws2 = spaces
-
+    member this.asdf x = x
 end
 
-
+(*
 let ws = spaces // skips any whitespace
 
 let str_ws s = pstring s >>. ws
@@ -66,3 +65,5 @@ let test() =
 
 // currently the program only executes some tests
 do test()
+
+*)
