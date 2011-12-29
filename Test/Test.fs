@@ -11,6 +11,12 @@ type innerParser () = class
     [<GLRAttribute>]
     [<ReflectedDefinitionAttribute>]
     member this.asdf x = x
+    [<GLRAttribute>]
+    [<ReflectedDefinitionAttribute>]
+    member this.asfd2 x = x
+    [<GLRAttribute>]
+    [<ReflectedDefinitionAttribute>]
+    member this.asdf3 x = x
 end
 
 (*
