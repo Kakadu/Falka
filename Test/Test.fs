@@ -1,7 +1,7 @@
 ﻿module Test
 
 open FParsec
-open Parser.Common
+open Falka.Common
 
 [<ParserClassAttribute>]
 type innerParser () = class

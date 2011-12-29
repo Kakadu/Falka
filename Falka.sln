@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Test", "Test\Test.fsproj", "{A921BB36-2F92-4E8A-8BF5-1009EAEAF99E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Common", "Common\Common.fsproj", "{05806D3F-2DC4-4A4E-8003-173363936FE0}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FalkaCommon", "Common\FalkaCommon.fsproj", "{05806D3F-2DC4-4A4E-8003-173363936FE0}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Falka", "Falka\Falka.fsproj", "{D0C52634-78B7-4D71-AC05-5C5A8701FEFB}"
 EndProject

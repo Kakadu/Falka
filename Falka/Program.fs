@@ -1,6 +1,6 @@
 ﻿open System.Reflection
-open Parser.Common
-open Parser.Utils
+open Falka.Common
+open Falka.Utils
 open Microsoft.FSharp.Quotations
 
 let dll = Assembly.LoadFrom @"Test.dll"

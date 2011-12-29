@@ -35,6 +35,9 @@
     <DocumentationFile>bin\Release\Falka.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\dlls\Common.dll</HintPath>
+    </Reference>
     <Reference Include="FParsec">
       <HintPath>FParsec.dll</HintPath>
     </Reference>
@@ -46,13 +49,16 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="YardPrinter">
+      <HintPath>..\dlls\YardPrinter.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.fsproj">
-      <Name>Common</Name>
+    <ProjectReference Include="..\Common\FalkaCommon.fsproj">
+      <Name>FalkaCommon</Name>
       <Project>{05806d3f-2dc4-4a4e-8003-173363936fe0}</Project>
       <Private>True</Private>
     </ProjectReference>

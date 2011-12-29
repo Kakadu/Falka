@@ -48,8 +48,8 @@
     <Compile Include="Test.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.fsproj">
-      <Name>Common</Name>
+    <ProjectReference Include="..\Common\FalkaCommon.fsproj">
+      <Name>FalkaCommon</Name>
       <Project>{05806d3f-2dc4-4a4e-8003-173363936fe0}</Project>
       <Private>True</Private>
     </ProjectReference>

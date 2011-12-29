@@ -1,5 +1,5 @@
 ﻿// Learn more about F# at http://fsharp.net
-module Parser.Common
+module Falka.Common
 type parserStrategy = GLR | LALR | RecDes
 
 type ParserClassAttribute () =
