@@ -6,8 +6,10 @@ open Parser.Common
 [<ParserClassAttribute>]
 type innerParser () = class
     [<GLRAttribute>]
+    [<ReflectedDefinitionAttribute>]
     member this.ws = spaces
     [<GLRAttribute>]
+    [<ReflectedDefinitionAttribute>]
     member this.asdf x = x
 end
 
