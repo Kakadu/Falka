@@ -1,5 +1,5 @@
-﻿// Learn more about F# at http://fsharp.net
-module Falka.Common
+﻿module Falka.Common
+
 type parserStrategy = GLR | LALR | RecDes
 
 type ParserClassAttribute () =
@@ -38,3 +38,11 @@ let filter_map f xs =
     | None -> ()
   )
   acc
+
+
+type FalkaLexer = 
+  abstract member peek: unit -> string
+  //abstract member peekNth: int -> string
+  abstract member tail: unit -> FalkaLexer
+  //abstract member tailN: unit -> FalkaLexer
+  

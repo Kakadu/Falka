@@ -1,23 +1,37 @@
 ﻿module Test
 
-open FParsec
+open Falka.Comb
 open Falka.Common
 
+let charHelper c (stream:FalkaLexer) =
+  let e: string = stream.peek ()
+  if e.Equals c
+  then Parsed (c, stream.tail ())
+  else Failed
+  
 [<ParserClassAttribute>]
 type innerParser () = class
-    [<GLRAttribute>]
-    [<ReflectedDefinitionAttribute>]
-    member this.ws = spaces
-    [<GLRAttribute>]
-    [<ReflectedDefinitionAttribute>]
-    member this.asdf x = x
-    [<GLRAttribute>]
-    [<ReflectedDefinitionAttribute>]
-    member this.asfd2 x = x
-    [<GLRAttribute>]
-    [<ReflectedDefinitionAttribute>]
-    member this.asdf3 x = x
+    member this.digit (stream: FalkaLexer) =
+      let e = stream.peek ()
+      match System.Int32.TryParse e with
+      | (true,_) -> Parsed (e, stream.tail ())
+      | (false,_)  -> Failed
+
+    member this.opPlus (stream: FalkaLexer)  = charHelper "+"
+    member this.opMinus (stream: FalkaLexer) = charHelper "-"
+    member this.opMul (stream: FalkaLexer)   = charHelper "*"
+    member this.opDiv (stream: FalkaLexer)   = charHelper "/"
+
+    member this.operator (stream: FalkaLexer) =
+      (this.opPlus ||| this.opMinus) stream
+
+    member this.expr (stream:FalkaLexer) = 
+      (this.digit >>> (p_many (this.digit >>> this.operator ) )) stream
+      
 end
+
+
+
 
 (*
 let ws = spaces // skips any whitespace

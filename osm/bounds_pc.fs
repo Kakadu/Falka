@@ -27,8 +27,12 @@ let p_node = p_str "<node" >>>  p_many (p_ws >>> p_node_param) >>> p_endnode
 let p_tag = p_char '<' >>> p_many (p_pred ((<>) '>')) >>> p_char '>'
 let p_osm = p_many ((p_node ||| p_tag) >>> p_ws)
   
-let do_process osm = 
-  let chars = String.explode osm in
+let do_process (osm: string) = 
+  let chars = 
+    osm 
+    |> System.Text.Encoding.ASCII.GetBytes 
+    |> Array.map (fun b -> char b) 
+    |> Array.toList
   match p_osm chars with
   | Parsed(_, s) -> Printf.printf "pc ok: lat=%f..%f lon=%f..%f\n" !minlat !maxlat !minlon !maxlon 
   | Failed -> Printf.printf "parse failed\n"       

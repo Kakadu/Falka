@@ -14,5 +14,6 @@ namespace FalkaCS {
 
             var x = root.GetProperties().Select(pr => pr.GetCustomAttributes(false));
         }
+        static void adasdf(dynamic x) {            x.foo();        }
     }
 }
