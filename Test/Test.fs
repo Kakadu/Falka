@@ -42,7 +42,15 @@ type parser1 () = class
     pstring "[" >>. sepBy pfloat (pstring ",") .>> pstring "]"
   [<ParserFunction>]
   member this.number : Parser<_,unit> = 
-    pfloat //>>. spaces
+    pfloat >>. spaces
+  [<ParserFunction>]
+  member this.lbra : Parser<_,unit> = pstring "("
+  [<ParserFunction>]
+  member this.rbra : Parser<_,unit> = pstring ")"
+  member this.op : Parser<_,unit> = 
+    (pchar '+') <|> pchar '-' <|> pchar '*'
+  member this.expr =
+    this.number <|> (this.number >>. this.op >>. this.expr)
 
 
 end

@@ -26,6 +26,7 @@ let test p str =
 
 let () = 
   let c = new Test.parser1 ()
-  let _ = test c.number "1.2"
+  let _ = test c.number "1.2 "
   let _ = test c.floatlist "[1.2,3.5]"
+  let _ = test c.expr "1+2+3+4"
   ()
