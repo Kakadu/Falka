@@ -35,6 +35,11 @@ end
 open FParsec
 open Falka.Attributes
 
+let wrap_rec p =
+  let _expr, exprImpl = createParserForwardedToRef()
+  exprImpl.Value <- p _expr
+  _expr
+
 [<ParserClass>]
 type parser1 () = class
   [<ParserFunction>]
@@ -49,9 +54,8 @@ type parser1 () = class
   member this.rbra : Parser<_,unit> = pstring ")"
   member this.op : Parser<_,unit> = 
     (pchar '+') <|> pchar '-' <|> pchar '*'
-  member this.expr =
-    this.number <|> (this.number >>. this.op >>. this.expr)
-
+  member this.expr : Parser<_,unit> =
+    wrap_rec (fun expr -> ((this.number >>. this.op >>. expr) <|> this.number) )
 
 end
 
