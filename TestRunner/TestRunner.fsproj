@@ -35,6 +35,12 @@
     <DocumentationFile>bin\Release\TestRunner.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FParsec">
+      <HintPath>..\Falka\FParsec.dll</HintPath>
+    </Reference>
+    <Reference Include="FParsecCS">
+      <HintPath>..\Falka\FParsecCS.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />

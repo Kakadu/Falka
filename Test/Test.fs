@@ -1,5 +1,5 @@
 ﻿module Test
-
+(*
 open Falka.Comb
 open Falka.Common
 
@@ -7,7 +7,8 @@ let charHelper c (stream:FalkaLexer) =
   let e: string = stream.peek ()
   if e.Equals c
   then Parsed (c, stream.tail ())
-  else Failed
+  else Failed 
+  
   
 [<ParserClassAttribute>]
 type innerParser () = class
@@ -17,21 +18,34 @@ type innerParser () = class
       | (true,_) -> Parsed (e, stream.tail ())
       | (false,_)  -> Failed
 
-    member this.opPlus (stream: FalkaLexer)  = charHelper "+"
-    member this.opMinus (stream: FalkaLexer) = charHelper "-"
-    member this.opMul (stream: FalkaLexer)   = charHelper "*"
-    member this.opDiv (stream: FalkaLexer)   = charHelper "/"
+    member this.opPlus (stream: FalkaLexer)  = charHelper "+" stream
+    member this.opMinus (stream: FalkaLexer) = charHelper "-" stream
+    member this.opMul (stream: FalkaLexer)   = charHelper "*" stream
+    member this.opDiv (stream: FalkaLexer)   = charHelper "/" stream
 
     member this.operator (stream: FalkaLexer) =
-      (this.opPlus ||| this.opMinus) stream
+      (this.opPlus ||| this.opMinus ||| this.opMul ||| this.opDiv) stream
 
     member this.expr (stream:FalkaLexer) = 
-      (this.digit >>> (p_many (this.digit >>> this.operator ) )) stream
+      ( (this.digit >>> this.operator >>> this.expr) ||| this.digit ) stream
       
 end
+*)
+
+open FParsec
+open Falka.Attributes
+
+[<ParserClass>]
+type parser1 () = class
+  [<ParserFunction>]
+  member this.floatlist : Parser<_,unit> = 
+    pstring "[" >>. sepBy pfloat (pstring ",") .>> pstring "]"
+  [<ParserFunction>]
+  member this.number : Parser<_,unit> = 
+    pfloat //>>. spaces
 
 
-
+end
 
 (*
 let ws = spaces // skips any whitespace

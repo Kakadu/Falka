@@ -1,18 +1,21 @@
-﻿module Falka.Common
+﻿module Falka.Attributes
 
 type parserStrategy = GLR | LALR | RecDes
 
 type ParserClassAttribute () =
     inherit System.Attribute()
 
-type GLRAttribute () = 
+type ParserFunctionAttribute () =
     inherit System.Attribute()
+
+type GLRAttribute () = 
+    inherit ParserFunctionAttribute()
 
 type LALRAttribute () = 
-    inherit System.Attribute()
+    inherit ParserFunctionAttribute()
 
 type RecDesAttribute () = 
-    inherit System.Attribute()
+    inherit ParserFunctionAttribute()
 
 let isParserFunction (mem: System.Reflection.MemberInfo) = 
   let attrs = mem.GetCustomAttributes false
