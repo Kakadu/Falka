@@ -51,11 +51,12 @@ type parser1 () = class
   [<ParserFunction>]
   member this.lbra : Parser<_,unit> = pstring "("
   [<ParserFunction>]
+  [<ReflectedDefinition>]
   member this.rbra : Parser<_,unit> = pstring ")"
   member this.op : Parser<_,unit> = 
     (pchar '+') <|> pchar '-' <|> pchar '*'
   member this.expr : Parser<_,unit> =
-    wrap_rec (fun expr -> ((this.number >>. this.op >>. expr) <|> this.number) )
+    wrap_rec (fun expr -> (this.number <|> (this.number >>. this.op >>. expr) ) )
 
 end
 
