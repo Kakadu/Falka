@@ -23,6 +23,14 @@ let (|PString|_|) (e:MethodInfo) =
   match e with
   | _ when e.Name = "pstring" -> Some PString
   | _ -> None
+let (|PChar|_|) (e:MethodInfo) = 
+  match e with
+  | _ when e.Name = "pchar" -> Some PChar
+  | _ -> None
+let (|LsBarGr|_|) (e:MethodInfo) = 
+  match e with
+  | _ when e.Name = "op_LessBarGreater" -> Some LsBarGr
+  | _ -> None
 
 exception YardRule of Yard.Core.IL.Production.t<Yard.Core.IL.Source.t, Yard.Core.IL.Source.t>
 exception EvalFail of string * Expr
@@ -81,10 +89,22 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
                   (wrap l) @ (wrap r)
                 Production.PSeq (lst,None)
               end
+            | LsBarGr ->
+                if List.length args <> 2 then error' "<|> should have 1 parameter"
+                let (l,r) = List.head args, List.nth args 1
+                let (l,r) = inner l, inner r
+                Production.PAlt (l,r)
             | PString -> 
               begin
                 if List.length args <> 1 then error' "pstring should have 1 parameter"
                 if not (ExprHelper.isValue (List.head args)) then error' "1st arg of pstring should be a value"
+                let s = ExprHelper.takeValue (List.head args)
+                Production.PLiteral (ILHelper.make_Sourcet s)
+              end
+            | PChar ->
+              begin
+                if List.length args <> 1 then error' "pchar should have 1 parameter"
+                if not (ExprHelper.isValue (List.head args)) then error' "1st arg of pchar should be a value"
                 let s = ExprHelper.takeValue (List.head args)
                 Production.PLiteral (ILHelper.make_Sourcet s)
               end
@@ -102,13 +122,14 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
     | Some ( (Call (_,mi,args)) as body) -> 
       begin
         Printf.printf "body detected for method %s:\n%s\n\n" meth.Name (body.ToString () )
-        let () = match  matcher body with
-        | Some x -> 
-            Printf.printf "Grammar evaluated!\n"
-            let r = ILHelper.makeRule meth.Name x
-            let s = Yard.Generators.YardPrinter.Generator.printRule r
-            Yard.Generators.YardPrinter.Generator.printTextBox 2 80 s |> Printf.printfn "%s"            
-        | None -> Printf.printf "Grammar failed to evaluate\n"
+        let () = 
+          match  matcher body with
+          | Some x -> 
+              Printf.printf "Grammar evaluated!\n"
+              let r = ILHelper.makeRule meth.Name x
+              let s = Yard.Generators.YardPrinter.Generator.printRule r
+              Yard.Generators.YardPrinter.Generator.printTextBox 2 80 s |> Printf.printfn "%s"            
+          | None -> Printf.printf "Grammar failed to evaluate\n"
         Some body
       end
     | _ -> Printf.printf "bad body detected\n"; None
