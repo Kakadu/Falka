@@ -1,0 +1,9 @@
+The main purpose of this tool is to  recover grammar definition from 
+parser-combinators and generate for some parser functions another
+parser (LALR, recursive descent or something else).
+
+Maybe using this new parser will speedup parsing.
+
+An internal realization of grammar types was adopted from project 
+[Recursive-ascent](http://code.google.com/p/recursive-ascent/).
+It is a tool similar to yacc but with more features.
