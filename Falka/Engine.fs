@@ -23,6 +23,8 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
     let rec inner e : Production.t<_,_> = 
       let error' s = raise (EvalFail (s,e))
       match e with
+      | ThisCall (mi,args) -> 
+          Production.PRef (ILHelper.make_Sourcet mi.Name,None)
       | Call (_,mi,args) -> 
         begin
             match mi with
@@ -71,20 +73,19 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
     | YardRule x -> Some x
 
   match getBody expr with
-    | None -> Printf.printf "\nno body detected\n"; None
-    | Some ( (Call (_,mi,args)) as body) -> 
+    | None -> Printf.printf "\nno body or bad detected:\n%A\n" expr; None
+    | Some body -> 
       begin
-        Printf.printf "body detected for method %s:\n%A\n\n" meth.Name body
+        //Printf.printf "body detected for method %s:\n%A\n\n" meth.Name body
         let () = 
           match  matcher body with
           | Some x -> 
-              Printf.printf "Grammar evaluated!\n"
+              Printf.printf "Rule evaluated!\n"
               let r = ILHelper.makeRule meth.Name x
               let s = Yard.Generators.YardPrinter.Generator.printRule r
               Yard.Generators.YardPrinter.Generator.printTextBox 2 80 s |> Printf.printfn "%s"            
           | None -> Printf.printf "Grammar failed to evaluate\n"
         Some body
       end
-    | _ -> Printf.printf "bad body detected\n"; None
-  
+    
   

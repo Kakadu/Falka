@@ -13,33 +13,47 @@ let getBody x =
      ,Lambda (_,
                 Let (_,
                      (Call (a,b,c) as ans),
-                     _))) -> Some ans
+                     _))) -> Some ans   // member this.asdf = ... >>. ...
+  | Lambda 
+     (_
+     ,Lambda (_,
+                Let (_
+                    ,(Lambda(_
+                           ,Call (a,b,c)
+                           ) as ans)
+                    ,_))) -> Some ans // member this.comb1 = this.comb2
   | _ -> None
 
 let (|GrGrDot|_|) (e: MethodInfo) = 
   match e with
   | _ when e.Name = "op_GreaterGreaterDot" -> Some GrGrDot
   | _ -> None
-let (|DotGrGr|_|) (e: MethodInfo) = 
+let (|DotGrGr|_|) (e: MethodInfo) =
   match e with
   | _ when e.Name = "op_DotGreaterGreater" -> Some DotGrGr
   | _ -> None
-let (|PString|_|) (e:MethodInfo) = 
+let (|PString|_|) (e:MethodInfo) =
   match e with
   | _ when e.Name = "pstring" -> Some PString
   | _ -> None
-let (|PChar|_|) (e:MethodInfo) = 
+let (|PChar|_|) (e:MethodInfo) =
   match e with
   | _ when e.Name = "pchar" -> Some PChar
   | _ -> None
-let (|LsBarGr|_|) (e:MethodInfo) = 
+let (|LsBarGr|_|) (e:MethodInfo) =
   match e with
   | _ when e.Name = "op_LessBarGreater" -> Some LsBarGr
   | _ -> None
-let (|PMany|_|) (e:MethodInfo) = 
+let (|PMany|_|) (e:MethodInfo) =
   match e with
   | _ when e.Name = "many" -> Some PMany
   | _ -> None
+let (|ThisCall|_|) (e:Expr) =
+  match e with
+    | Lambda(_arg
+            ,Call (_obj,mi,args) 
+            ) -> Some (mi,args)
+    | _ -> None
 
 open Yard.Core.IL
 
