@@ -20,6 +20,10 @@ let (|GrGrDot|_|) (e: MethodInfo) =
   match e with
   | _ when e.Name = "op_GreaterGreaterDot" -> Some GrGrDot
   | _ -> None
+let (|DotGrGr|_|) (e: MethodInfo) = 
+  match e with
+  | _ when e.Name = "op_DotGreaterGreater" -> Some DotGrGr
+  | _ -> None
 let (|PString|_|) (e:MethodInfo) = 
   match e with
   | _ when e.Name = "pstring" -> Some PString
@@ -31,6 +35,10 @@ let (|PChar|_|) (e:MethodInfo) =
 let (|LsBarGr|_|) (e:MethodInfo) = 
   match e with
   | _ when e.Name = "op_LessBarGreater" -> Some LsBarGr
+  | _ -> None
+let (|PMany|_|) (e:MethodInfo) = 
+  match e with
+  | _ when e.Name = "many" -> Some PMany
   | _ -> None
 
 open Yard.Core.IL

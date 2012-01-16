@@ -14,9 +14,10 @@ exception EvalFail of string * Expr
 module Printer = Yard.Generators.YardPrinter.Generator
 open Printer 
 
+let error x = raise (EvalFail x)
+
 let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
   let matcher e = 
-    let error x = raise (EvalFail x)
     // Maybe to use `OK of 'a | Error of exn` instead of exception to be sure that
     // all exception were catched
     let rec inner e : Production.t<_,_> = 
@@ -25,6 +26,7 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
       | Call (_,mi,args) -> 
         begin
             match mi with
+            | DotGrGr     // .>>
             | GrGrDot ->  // >>.
                 if List.length args <> 2 then error' ">>. should have 2 parameters"
                 let (l,r) = List.head args, List.nth args 1
@@ -53,20 +55,26 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
                 if not (ExprHelper.isValue (List.head args)) then error' "1st arg of pchar should be a value"
                 let s = ExprHelper.takeValue (List.head args)
                 Production.PLiteral (ILHelper.make_Sourcet s)
+            | PMany ->
+                if List.length args <> 1 then error' "pmany should have 1 parameter"
+                Production.PMany (inner (List.head args))
             | _ -> error' "pattern-matching haven't match a part of code"
         end
       | _ -> error' "pattern-matching haven't match a part of code"
     try
       Some (inner e)
     with 
-    | EvalFail (s,where) -> None
+    | EvalFail (s,where) -> 
+        Printf.printf "error occured: %s\n" s
+        Printf.printfn "%A" where
+        None
     | YardRule x -> Some x
 
   match getBody expr with
     | None -> Printf.printf "\nno body detected\n"; None
     | Some ( (Call (_,mi,args)) as body) -> 
       begin
-        Printf.printf "body detected for method %s:\n%s\n\n" meth.Name (body.ToString () )
+        Printf.printf "body detected for method %s:\n%A\n\n" meth.Name body
         let () = 
           match  matcher body with
           | Some x -> 

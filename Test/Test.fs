@@ -45,13 +45,19 @@ let wrap_meth s (f : Parser<_,unit>) =
 
 [<ParserClass>]
 type parser1 () = class
-(*
+
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  member this.sekv stream = 
+    let body = many (pstring "[" .>> pstring "]")
+    wrap_meth stream body
+(*      
   [<ParserFunction>]
   [<ReflectedDefinition>]
   member this.floatlist stream = 
     let body = pstring "[" >>. sepBy pfloat (pstring ",") .>> pstring "]"
     wrap_meth stream body
-      
+
   [<ParserFunction>]
   [<ReflectedDefinition>]
   member this.number stream = 
