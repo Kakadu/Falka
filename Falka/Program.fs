@@ -1,32 +1,39 @@
-﻿open System.Reflection
-open Falka.Common
+﻿module Falka.Main
+open Falka
+
+open System.Reflection
+open Falka.Attributes
 open Falka.Utils
 open Microsoft.FSharp.Quotations
 
 let dll = Assembly.LoadFrom @"Test.dll"
 let innerParser : System.Type = 
   let rootns = dll.GetType "Test"
-  let _inn : MemberInfo [] = rootns.GetMember "innerParser"
+  let _inn : MemberInfo [] = rootns.GetMember @"parser1"
   (_inn.GetValue 0 :?> System.Type)
 
-let (methods,_) =  // TODO: look at properties too.
-  let f x = match isParserFunction x with
-    | Some y -> Some (x,y)
-    | None -> None
+let methods =
+  // TODO: look at properties too.
+  // NB. We cannot appply ReflectedDefinition Attribute to properrties
   let g arr = 
     arr 
     |> Array.toList
-    |> List.filter_map f
-  let (m',_) = (innerParser.GetMethods () |> g, innerParser.GetProperties () |> g)
-  (m' 
-   |> List.filter_map (fun (m,sort)  ->
+    |> List.filter isParserFunction
+  let m' = innerParser.GetMethods () |> g
+  m' |> List.filter_map (fun m  ->
     match Expr.TryGetReflectedDefinition m with
     | None -> None
-    | Some body -> Some (m,body,sort) 
-  ),1)
+    | Some body -> Some (m,body) 
+  )
 
+let show_parserfun : (MethodInfo * Expr) -> _ = fun (info,expr) ->
+  let name = info.Name
+  Printf.sprintf "Name: %s\nBody:\n%s\n" name (expr.ToString ())
+  
+let () = 
+  let lst = List.map show_parserfun methods |> List.toSeq
+  System.IO.File.WriteAllLines(@"log.txt", lst)
 
-let () = ()
-let () = ()
-let () = ()
-
+let () = 
+  let _ = List.map Engine.eval methods
+  ()

@@ -40,24 +40,48 @@ let wrap_rec p =
   exprImpl.Value <- p _expr
   _expr
 
+let wrap_meth s (f : Parser<_,unit>) =
+  f s
+
 [<ParserClass>]
 type parser1 () = class
-  [<ParserFunction>]
-  member this.floatlist : Parser<_,unit> = 
-    pstring "[" >>. sepBy pfloat (pstring ",") .>> pstring "]"
-  [<ParserFunction>]
-  member this.number : Parser<_,unit> = 
-    pfloat >>. spaces
-  [<ParserFunction>]
-  member this.lbra : Parser<_,unit> = pstring "("
+(*
   [<ParserFunction>]
   [<ReflectedDefinition>]
-  member this.rbra : Parser<_,unit> = pstring ")"
-  member this.op : Parser<_,unit> = 
-    (pchar '+') <|> pchar '-' <|> pchar '*'
-  member this.expr : Parser<_,unit> =
-    wrap_rec (fun expr -> (this.number <|> (this.number >>. this.op >>. expr) ) )
+  member this.floatlist stream = 
+    let body = pstring "[" >>. sepBy pfloat (pstring ",") .>> pstring "]"
+    wrap_meth stream body
+      
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  member this.number stream = 
+    let body = pfloat >>. spaces
+    wrap_meth stream body
+*)
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  member this.lbra stream = 
+    let body = pstring "("
+    wrap_meth stream body
+(*
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  member this.rbra stream = 
+    let body = pstring ")"
+    wrap_meth stream body
+    
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  member this.op stream = 
+    let body = pchar '+' <|> pchar '-' <|> pchar '*'
+    wrap_meth stream body
 
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  member this.expr stream =    
+    let body = wrap_rec (fun ans -> this.number <|> (this.number >>. this.op >>. ans) )
+    wrap_meth stream body
+*)
 end
 
 (*

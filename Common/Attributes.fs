@@ -20,6 +20,13 @@ type RecDesAttribute () =
 let isParserFunction (mem: System.Reflection.MemberInfo) = 
   let attrs = mem.GetCustomAttributes false
   attrs |> Array.fold (fun acc x -> 
+    acc || 
+    (match x with
+    | :? ParserFunctionAttribute -> true
+    | _        -> false)
+  ) false
+
+(*  attrs |> Array.fold (fun acc x -> 
     match (acc,x) with
     | (Some _,_) -> acc
     | (_,(:? RecDesAttribute)) -> Some (RecDes)
@@ -27,7 +34,7 @@ let isParserFunction (mem: System.Reflection.MemberInfo) =
     | (_,(:? GLRAttribute)) -> Some (GLR)
     | _ -> None
     ) None
-
+*)
 let isParserClass (mem: System.Reflection.MemberInfo) = 
   let attrs = mem.GetCustomAttributes false
   mem.ReflectedType.IsClass &&
@@ -42,10 +49,10 @@ let filter_map f xs =
   )
   acc
 
-
+(*
 type FalkaLexer = 
   abstract member peek: unit -> string
   //abstract member peekNth: int -> string
   abstract member tail: unit -> FalkaLexer
   //abstract member tailN: unit -> FalkaLexer
-  
+*)  

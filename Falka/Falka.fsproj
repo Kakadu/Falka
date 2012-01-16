@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
