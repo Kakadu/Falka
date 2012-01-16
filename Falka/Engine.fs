@@ -4,64 +4,15 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Quotations.DerivedPatterns
 open Yard.Core
-
-let getBody x =  
-  match x with
-  | Lambda 
-     (_
-     ,Lambda (_,
-                Let (_,
-                     (Call (a,b,c) as ans),
-                     _))) -> Some ans
-  | _ -> None
-
-let (|GrGrDot|_|) (e: MethodInfo) = 
-  match e with
-  | _ when e.Name = "op_GreaterGreaterDot" -> Some GrGrDot
-  | _ -> None
-let (|PString|_|) (e:MethodInfo) = 
-  match e with
-  | _ when e.Name = "pstring" -> Some PString
-  | _ -> None
-let (|PChar|_|) (e:MethodInfo) = 
-  match e with
-  | _ when e.Name = "pchar" -> Some PChar
-  | _ -> None
-let (|LsBarGr|_|) (e:MethodInfo) = 
-  match e with
-  | _ when e.Name = "op_LessBarGreater" -> Some LsBarGr
-  | _ -> None
-
-exception YardRule of Yard.Core.IL.Production.t<Yard.Core.IL.Source.t, Yard.Core.IL.Source.t>
-exception EvalFail of string * Expr
+open EngineHelpers
 
 open Yard.Core.IL
 
-module ExprHelper = begin
-  let isValue = function
-  | Value _ -> true
-  | _ -> false
-  let takeValue (y: Expr) = 
-    match y with
-    | Value (x,_) -> // in our case x always be a string
-        x.ToString ()
-    | _ -> failwith "Wrong argument of takeValue"
-end
+exception YardRule of Production.t<Source.t, Source.t>
+exception EvalFail of string * Expr
 
 module Printer = Yard.Generators.YardPrinter.Generator
 open Printer 
-
-module ILHelper = begin
-  let isPSeq = function
-  | Production.PSeq _ -> true
-  | _ -> false
-  let lst_of_PSeq_exn = function
-  | Production.PSeq (l,_) -> l
-  | _ -> failwith "wrong argument of lst_of_PSeq_exn"
-  let make_Sourcet s = (s,(0,0))
-  let makeRule name body : IL.Rule.t<_,_> =
-    { name=name; _public=true; args=[]; body=body; metaArgs=[] }
-end
 
 let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
   let matcher e = 
@@ -74,8 +25,7 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
       | Call (_,mi,args) -> 
         begin
             match mi with
-            | GrGrDot -> 
-              begin // >>.
+            | GrGrDot ->  // >>.
                 if List.length args <> 2 then error' ">>. should have 2 parameters"
                 let (l,r) = List.head args, List.nth args 1
                 let (l,r) = inner l, inner r
@@ -88,26 +38,21 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
                     else [{omit=false; rule=l; binding=None; checker=None}]
                   (wrap l) @ (wrap r)
                 Production.PSeq (lst,None)
-              end
             | LsBarGr ->
                 if List.length args <> 2 then error' "<|> should have 1 parameter"
                 let (l,r) = List.head args, List.nth args 1
                 let (l,r) = inner l, inner r
                 Production.PAlt (l,r)
             | PString -> 
-              begin
                 if List.length args <> 1 then error' "pstring should have 1 parameter"
                 if not (ExprHelper.isValue (List.head args)) then error' "1st arg of pstring should be a value"
                 let s = ExprHelper.takeValue (List.head args)
                 Production.PLiteral (ILHelper.make_Sourcet s)
-              end
             | PChar ->
-              begin
                 if List.length args <> 1 then error' "pchar should have 1 parameter"
                 if not (ExprHelper.isValue (List.head args)) then error' "1st arg of pchar should be a value"
                 let s = ExprHelper.takeValue (List.head args)
                 Production.PLiteral (ILHelper.make_Sourcet s)
-              end
             | _ -> error' "pattern-matching haven't match a part of code"
         end
       | _ -> error' "pattern-matching haven't match a part of code"
