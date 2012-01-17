@@ -34,6 +34,11 @@ let () =
   let lst = List.map show_parserfun methods |> List.toSeq
   System.IO.File.WriteAllLines(@"log.txt", lst)
 
+open EngineHelpers
 let () = 
-  let _ = List.map Engine.eval methods
+  let rules = List.map Engine.eval methods
+  let rules = List.filter_map (fun x -> x) rules
+  Printf.printfn "\nGrammar is:"
+  Yard.Generators.YardPrinter.Generator.generate (ILHelper.makeDefinition rules "filename") 
+    |> Printf.printfn "%s"
   ()

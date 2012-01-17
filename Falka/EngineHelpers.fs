@@ -78,4 +78,7 @@ module ILHelper = begin
   let make_Sourcet s = (s,(0,0))
   let makeRule name body : IL.Rule.t<_,_> =
     { name=name; _public=true; args=[]; body=body; metaArgs=[] }
+
+  let makeDefinition rules fileName : IL.Definition.t<_,_> = 
+    {info = {fileName=fileName};  head=None; foot=None; grammar=rules }
 end

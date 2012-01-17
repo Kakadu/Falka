@@ -77,15 +77,14 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
     | Some body -> 
       begin
         //Printf.printf "body detected for method %s:\n%A\n\n" meth.Name body
-        let () = 
-          match  matcher body with
+        match  matcher body with
           | Some x -> 
               Printf.printf "Rule evaluated!\n"
               let r = ILHelper.makeRule meth.Name x
               let s = Yard.Generators.YardPrinter.Generator.printRule r
-              Yard.Generators.YardPrinter.Generator.printTextBox 2 80 s |> Printf.printfn "%s"            
-          | None -> Printf.printf "Grammar failed to evaluate\n"
-        Some body
+              Yard.Generators.YardPrinter.Generator.printTextBox 2 80 s |> Printf.printfn "%s"
+              Some r
+          | None -> Printf.printf "Grammar failed to evaluate\n"; None
       end
     
   
