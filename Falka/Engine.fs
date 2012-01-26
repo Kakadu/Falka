@@ -60,6 +60,22 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
             | PMany ->
                 if List.length args <> 1 then error' "pmany should have 1 parameter"
                 Production.PMany (inner (List.head args))
+            | PPipe3 ->
+               match args with
+               | [p1;p2;p3;f] ->
+                   let bindings = List.init 3 (fun _ -> None)
+                   let prods = [inner p1; inner p2; inner p3]
+                   let content = 
+                     List.map2 (fun bind body -> 
+                       EngineHelpers.ILHelper.makeElem bind body false None) bindings prods
+                   Production.PSeq (content,None)
+               | _ -> error' "pipe3 should have 4 parameter"
+            | PBarGrGr -> // |>>
+               match args with
+               | [p;f] -> 
+                   // TODO: add evaluation of action code
+                   inner p
+               | _ -> error' "|>> should have 2 parameter"
             | _ -> error' (sprintf "pattern-matching haven't match a part of code (mi.Name = %A)" mi.Name )
         end
       | _ -> error' (sprintf "pattern-matching haven't match a part of code (expr = %A)" e)

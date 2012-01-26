@@ -48,6 +48,15 @@ let (|PMany|_|) (e:MethodInfo) =
   match e with
   | _ when e.Name = "many" -> Some PMany
   | _ -> None
+let (|PPipe3|_|) (e:MethodInfo) =
+  match e with
+  | _ when e.Name = "pipe3" -> Some PPipe3
+  | _ -> None
+let (|PBarGrGr|_|) (e:MethodInfo) =
+  match e with
+  | _ when e.Name = "op_BarGreaterGreater" -> Some PBarGrGr
+  | _ -> None
+
 let (|ThisCall|_|) (e:Expr) =
   match e with
     | Lambda(_arg
@@ -81,4 +90,7 @@ module ILHelper = begin
 
   let makeDefinition rules fileName : IL.Definition.t<_,_> = 
     {info = {fileName=fileName};  head=None; foot=None; grammar=rules }
+
+  let makeElem b rule omit checker : IL.Production.elem<_,_> =
+    { rule=rule; omit=omit; checker=checker; binding=b }
 end
