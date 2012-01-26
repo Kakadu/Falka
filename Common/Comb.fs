@@ -42,7 +42,38 @@ let (<|>) p1 p2 = fun lst ->
       | Success _ as ans -> ans
       | Failed _ as ans -> ans
 
+let (|>>) p f =
+  fun s ->
+    match p s with
+    | Success (ans,tail) -> Success (f ans, tail)
+    | Failed s -> Failed s
 
+let pipe2 p1 p2 f =
+  fun s ->
+    let r1 = p1 s
+    match r1 with
+    | Success (a, s2) ->
+        let r2 = p2 s2
+        match r2 with
+        | Success (b, s3) -> Success (f a b, s3)
+        | Failed _ -> r2
+    | Failed _ -> r1
+
+let pipe3
+  : Parser<'t,'a> -> Parser<'t,'b> -> Parser<'t,'c> -> ('a -> 'b -> 'c -> 'd) -> Parser<'t,'d> =
+  fun p1 p2 p3 f s1 ->
+    let r1 = p1 s1
+    match r1 with
+    | Success (a, s2) ->
+        let r2 = p2 s2
+        match r2 with
+        | Success (b, s3) ->
+            let r3 = p3 s3
+            match r3 with
+            | Success (c, s4) -> Success (f a b c, s4)
+            | Failed s -> Failed s
+        | Failed s -> Failed s
+    | Failed s -> Failed s
 
 let createParserForwardedToRef () =
     let dummyParser = fun stream -> failwith "a parser created with createParserForwardedToRef was not initialized"
