@@ -5,7 +5,7 @@ open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Quotations.DerivedPatterns
 open Yard.Core
 open EngineHelpers
-
+open Printf
 open Yard.Core.IL
 
 exception YardRule of Production.t<Source.t, Source.t>
@@ -60,9 +60,9 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
             | PMany ->
                 if List.length args <> 1 then error' "pmany should have 1 parameter"
                 Production.PMany (inner (List.head args))
-            | _ -> error' "pattern-matching haven't match a part of code"
+            | _ -> error' (sprintf "pattern-matching haven't match a part of code (mi.Name = %A)" mi.Name )
         end
-      | _ -> error' "pattern-matching haven't match a part of code"
+      | _ -> error' (sprintf "pattern-matching haven't match a part of code (expr = %A)" e)
     try
       Some (inner e)
     with 

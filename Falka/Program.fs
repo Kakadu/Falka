@@ -1,15 +1,18 @@
 ﻿module Falka.Main
 open Falka
 
+let (dllname, nsname, classname) = 
+  //(@"Test.dll", @"Test", @"parser1")
+  (@"Test.dll", @"Test2", @"innerParser")
 open System.Reflection
 open Falka.Attributes
 open Falka.Utils
 open Microsoft.FSharp.Quotations
 
-let dll = Assembly.LoadFrom @"Test.dll"
+let dll = Assembly.LoadFrom dllname
 let innerParser : System.Type = 
-  let rootns = dll.GetType "Test"
-  let _inn : MemberInfo [] = rootns.GetMember @"parser1"
+  let rootns = dll.GetType nsname
+  let _inn : MemberInfo [] = rootns.GetMember classname
   (_inn.GetValue 0 :?> System.Type)
 
 let methods =

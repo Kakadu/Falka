@@ -65,21 +65,23 @@ let wrap_rec p =
 let wrap_meth s (f : Parser<_,_>) =
   f s
 
+open Falka.Attributes
 type innerParser () = class
   member this.number stream : Result<token, token> = 
     (stream?number : unit -> Result<token,token>) ()
   member this.operator stream : Result<token, token> = 
     (stream?operator : unit -> Result<token,token>) ()
-  
+
+  [<ParserFunction>]
+  [<ReflectedDefinition>]  
   member this.expr stream = 
     let body = 
-      wrap_rec (fun ans -> 
-        (pipe3 this.number this.operator ans (fun a b c -> 
+        (pipe3 this.number this.operator this.expr (fun a b c -> 
           match (a,b) with
           | (TNumber a,TOperator x) -> Expr (x,Number a,c)
           | _ -> failwith "some bug here")
         ) 
-        <|> (this.number |>> (function TNumber x -> Number x | _ -> failwith "some bug") ) )
+        <|> (this.number |>> (function TNumber x -> Number x | _ -> failwith "some bug") )  
     wrap_meth stream body
   
 end
