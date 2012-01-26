@@ -11,12 +11,12 @@ type Result<'a,'token> =
 
 type Parser<'token, 'Result> = ITokenLexer<'token> -> Result<'Result, 'token>
 
-let (>>.) p1 p2 = fun lst ->
+let (>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'q>) : Parser<'t,'q> = fun lst ->
   match p1 lst with
   | Success (_, tail) -> p2 tail
-  | Failed _ as x -> x
+  | Failed s -> Failed s
   
-let (.>>.) p1 p2 = fun lst ->
+let (.>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'u>) : Parser<'t,'r*'u> = fun lst ->
   match p1 lst with
   | Success (ans1, tail) -> 
       match p2 tail with
@@ -34,7 +34,7 @@ let many p = fun lst ->
     | Failed _ -> Success (List.rev !ans, stream)
   inner lst
   
-let (<|>) p1 p2 = fun lst ->
+let (<|>) (p1: Parser<'t,'u>) (p2: Parser<'t,'u>) : Parser<'t,'u> = fun lst ->
   match p1 lst with
   | Success (a,b) as ans -> ans
   | Failed _ -> 
@@ -42,7 +42,7 @@ let (<|>) p1 p2 = fun lst ->
       | Success _ as ans -> ans
       | Failed _ as ans -> ans
 
-let (|>>) p f =
+let (|>>) (p: Parser<'t,'r>) (f: 'r -> 'b) : Parser<'t,'b> =
   fun s ->
     match p s with
     | Success (ans,tail) -> Success (f ans, tail)
@@ -59,9 +59,8 @@ let pipe2 p1 p2 f =
         | Failed _ -> r2
     | Failed _ -> r1
 
-let pipe3
-  : Parser<'t,'a> -> Parser<'t,'b> -> Parser<'t,'c> -> ('a -> 'b -> 'c -> 'd) -> Parser<'t,'d> =
-  fun p1 p2 p3 f s1 ->
+let pipe3 
+  (p1:Parser<'t,'a> ) (p2:Parser<'t,'b>) (p3:Parser<'t,'c>) (f:'a -> 'b -> 'c -> 'd) = fun s1 ->
     let r1 = p1 s1
     match r1 with
     | Success (a, s2) ->

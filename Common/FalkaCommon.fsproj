@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="Attributes.fs" />
+    <Compile Include="Comb.fsi" />
     <Compile Include="Comb.fs" />
     <Compile Include="Dynamics.fs" />
   </ItemGroup>

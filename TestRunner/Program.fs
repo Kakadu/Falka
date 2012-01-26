@@ -30,9 +30,10 @@ let () =
   let p = new Test2.innerParser ()
   let lexer = new Test2.innerLexer (tokens)
   let ans = p.expr lexer
-  let () = match ans with
-  | Success (ans, tail) ->
+  let () = 
+    match ans with
+    | Success (ans, tail) ->
         printfn "ans = %A" ans
         printfn "tail = %A" tail
-  | Failed s -> printfn "Parsing failed: %s\n" s
+    | Failed s -> printfn "Parsing failed: %s\n" s
   ()
