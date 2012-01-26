@@ -44,6 +44,9 @@
     <Reference Include="FParsecCS">
       <HintPath>FParsecCS.dll</HintPath>
     </Reference>
+    <Reference Include="FsYaccPrinter">
+      <HintPath>..\dlls\FsYaccPrinter.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
@@ -55,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EngineHelpers.fs" />
+    <Compile Include="FsYacc.fs" />
     <Compile Include="Engine.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

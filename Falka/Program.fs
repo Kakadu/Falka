@@ -38,7 +38,9 @@ open EngineHelpers
 let () = 
   let rules = List.map Engine.eval methods
   let rules = List.filter_map (fun x -> x) rules
+  let definition = ILHelper.makeDefinition rules "filename"
   Printf.printfn "\nGrammar is:"
-  Yard.Generators.YardPrinter.Generator.generate (ILHelper.makeDefinition rules "filename") 
-    |> Printf.printfn "%s"
+  Yard.Generators.YardPrinter.Generator.generate definition |> Printf.printfn "%s"
+  FsYacc.print "asdf.fsy" definition
   ()
+

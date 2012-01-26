@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Test.fs" />
+    <Compile Include="Test2.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\FalkaCommon.fsproj">

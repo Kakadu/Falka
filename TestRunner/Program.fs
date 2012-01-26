@@ -1,21 +1,5 @@
 ﻿module TestRunner
-(*open Test
-open Falka.Comb
-open Falka.Common
 
-type ListLexer (tokens: string list) =
-  interface FalkaLexer with
-    member this.peek () = List.head tokens
-    member this.tail () = (new ListLexer (List.tail tokens)) :> FalkaLexer
-
-let () = 
-  let p = new innerParser ()
-  let l = new ListLexer(["1";"+";"2";"-";"3";"*";"3";"/";"3"])
-  match p.expr l with
-  | Failed -> Printf.eprintf "failed\n"
-  | Parsed (_,s) -> Printf.printf "pasrsed\n" 
-  ()
-  *)
 
 (* fparsec *)
 open FParsec
@@ -29,4 +13,26 @@ let () =
 (*  let _ = test c.number "1.2 "
   let _ = test c.floatlist "[1.2,3.5]"
   let _ = test c.expr "1+2+3+4" *)
+  ()
+let run_fparsec p str ok fail =
+    match run p "1+2*3" with
+    | Success (x,y,z) -> ok (x,y,z)
+    | Failure (x,y,z) -> fail (x,y,z)
+
+open Falka.Comb
+let () =
+  let t = new Test2.innerTokenizer ()
+  let tokens = 
+    run_fparsec t.run "1+2*3" (fun (x,_,_) -> x) 
+                (fun (msg,_,_) -> 
+                  printfn "Failed tokenization. %s" msg
+                  failwith msg)
+  let p = new Test2.innerParser ()
+  let lexer = new Test2.innerLexer (tokens)
+  let ans = p.expr lexer
+  let () = match ans with
+  | Success (ans, tail) ->
+        printfn "ans = %A" ans
+        printfn "tail = %A" tail
+  | Failed s -> printfn "Parsing failed: %s\n" s
   ()
