@@ -52,7 +52,6 @@ type parser1 () = class
     let body = many (this.lbra .>> this.rbra)
     wrap_meth stream body
 
-(*      
   [<ParserFunction>]
   [<ReflectedDefinition>]
   member this.floatlist stream = 
@@ -64,7 +63,7 @@ type parser1 () = class
   member this.number stream = 
     let body = pfloat >>. spaces
     wrap_meth stream body
-*)
+
   [<ParserFunction>]
   [<ReflectedDefinition>]
   member this.lbra stream = 
@@ -88,12 +87,12 @@ type parser1 () = class
   member this.op stream = 
     let body = pchar '+' <|> pchar '-' <|> pchar '*'
     wrap_meth stream body
-(*
+
   [<ParserFunction>]
   [<ReflectedDefinition>]
   member this.expr stream =    
     let body = wrap_rec (fun ans -> this.number <|> (this.number >>. this.op >>. ans) )
     wrap_meth stream body
-*)
+
 end
 

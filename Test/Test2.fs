@@ -39,18 +39,23 @@ type innerLexer (lst : Token.token list) = class
       *)
   member this.number () : Result<token, token> =
     let o = this :> ITokenLexer<token>
-    match o.peek () with
-    | Number x as ans -> 
-        let temp = o.tail ()
-        Success (ans, temp)
-    | _ -> Failed "cant parse number"
+    if o.is_empty () 
+    then Failed "input is empty"
+    else match o.peek () with
+         | Number x as ans -> 
+             let temp = o.tail ()
+             Success (ans, temp)
+         | _ -> Failed "cant parse number"
+
   member this.operator () : Result<token, token> =
     let o = this :> ITokenLexer<token>
-    match o.peek () with
-    | Operator p as ans -> 
-        let temp = o.tail ()
-        Success (ans, temp)
-    | _ -> Failed "cant parse operator"
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek () with
+         | Operator p as ans -> 
+             let temp = o.tail ()
+             Success (ans, temp)
+         | _ -> Failed "cant parse operator"
   override this.ToString () = lst.ToString ()
 end
 
@@ -73,7 +78,7 @@ type innerParser () = class
     (stream?operator : unit -> Result<token,token>) ()
   
   member this.expr stream = 
-    let body = wrap_rec (fun ans -> (this.number >>. this.operator >>. ans) <|> this.number)
+    let body = wrap_rec (fun ans ->   (this.number >>. this.operator >>. ans) <|> this.number)
     wrap_meth stream body
   
 end

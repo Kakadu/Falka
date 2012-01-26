@@ -11,8 +11,8 @@ let test p str =
 let () = 
   let c = new Test.parser1 ()
 (*  let _ = test c.number "1.2 "
-  let _ = test c.floatlist "[1.2,3.5]"
-  let _ = test c.expr "1+2+3+4" *)
+  let _ = test c.floatlist "[1.2,3.5]" *)
+  let _ = test c.expr "1+2+3+4" 
   ()
 let run_fparsec p str ok fail =
     match run p "1+2*3" with
