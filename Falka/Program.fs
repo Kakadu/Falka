@@ -32,18 +32,26 @@ let methods =
 let show_parserfun : (MethodInfo * Expr) -> _ = fun (info,expr) ->
   let name = info.Name
   Printf.sprintf "Name: %s\nBody:\n%s\n" name (expr.ToString ())
-  
-let () = 
+
+let loglines : seq<string> ref = ref Seq.empty
+let () =
   let lst = List.map show_parserfun methods |> List.toSeq
-  System.IO.File.WriteAllLines(@"log.txt", lst)
+  loglines := lst
 
 open EngineHelpers
-let () = 
+let () =
   let rules = List.map Engine.eval methods
   let rules = List.filter_map (fun x -> x) rules
   let definition = ILHelper.makeDefinition rules "filename"
   Printf.printfn "\nGrammar is:"
-  Yard.Generators.YardPrinter.Generator.generate definition |> Printf.printfn "%s"
+  let () = 
+    Yard.Generators.YardPrinter.Generator.generate definition 
+    |> (fun s ->
+          Printf.printfn "%s" s
+          System.IO.File.WriteAllLines("gr.yrd", [s])
+       )
   FsYacc.print "asdf.fsy" definition
   ()
 
+let () =
+  System.IO.File.WriteAllLines(@"log.txt", !loglines)

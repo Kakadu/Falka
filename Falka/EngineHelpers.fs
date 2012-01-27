@@ -76,7 +76,7 @@ module ExprHelper = begin
         x.ToString ()
     | _ -> failwith "Wrong argument of takeValue"
 end
-
+open IL
 module ILHelper = begin
   let isPSeq = function
   | Production.PSeq _ -> true
@@ -88,9 +88,29 @@ module ILHelper = begin
   let makeRule name body : IL.Rule.t<_,_> =
     { name=name; _public=true; args=[]; body=body; metaArgs=[] }
 
-  let makeDefinition rules fileName : IL.Definition.t<_,_> = 
+  let makeDefinition rules fileName : IL.Definition.t<IL.Source.t,IL.Source.t> =
     {info = {fileName=fileName};  head=None; foot=None; grammar=rules }
 
-  let makeElem b rule omit checker : IL.Production.elem<_,_> =
+  let makeElem b rule omit checker : IL.Production.elem<Source.t,Source.t> =
     { rule=rule; omit=omit; checker=checker; binding=b }
 end
+
+open System
+let makeIdentFunc () =
+  let next = [| 'a'; 'a'; 'a' |]
+  let last = next.Length - 1
+  let incr_char (x:char) = x |> Convert.ToInt32 |> ((+)1) |> Convert.ToChar
+  let rec incr_ident i =
+      if i<0
+      then failwith "problem in identifiers generation"
+      if next.[i] = 'z'
+      then next.[i] <- 'a'; incr_ident (i-1)
+      else next.[i] <- incr_char next.[i]
+  (fun () ->
+    if next.ToString () = "zzz"
+    then failwith "problem in identifiers generation"
+    else
+      let ans = new String(next)
+      incr_ident last
+      ans
+  )

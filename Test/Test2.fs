@@ -74,6 +74,12 @@ type innerParser () = class
 
   [<ParserFunction>]
   [<ReflectedDefinition>]  
+  member this.twonumbers stream = 
+    let body = this.number >>. this.number
+    wrap_meth stream body
+  
+  [<ParserFunction>]
+  [<ReflectedDefinition>]  
   member this.expr stream = 
     let body = 
         (pipe3 this.number this.operator this.expr (fun a b c -> 

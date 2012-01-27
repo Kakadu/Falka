@@ -52,6 +52,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="Unquote">
+      <HintPath>..\dlls\Unquote.dll</HintPath>
+    </Reference>
     <Reference Include="YardPrinter">
       <HintPath>..\dlls\YardPrinter.dll</HintPath>
     </Reference>

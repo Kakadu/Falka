@@ -7,6 +7,7 @@ open Yard.Core
 open EngineHelpers
 open Printf
 open Yard.Core.IL
+open Swensen
 
 exception YardRule of Production.t<Source.t, Source.t>
 exception EvalFail of string * Expr
@@ -15,35 +16,37 @@ module Printer = Yard.Generators.YardPrinter.Generator
 open Printer 
 
 let error x = raise (EvalFail x)
+let nextIdent = EngineHelpers.makeIdentFunc ()
 
 let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
   let matcher e = 
     // Maybe to use `OK of 'a | Error of exn` instead of exception to be sure that
     // all exception were catched
-    let rec inner e : Production.t<_,_> = 
+    let rec inner e : Production.t<Source.t,Source.t> =
       let error' s = raise (EvalFail (s,e))
       match e with
       | ThisCall (mi,args) -> 
+          // TODO: we should in some moment understand what names are token names 
+          // and change names. Maybe we should use specific names in Lexer.token union
+          // TODO: maybe we should patch FsYaccGenerator to explain generator which 
+          // names we should use for tokens and rule names (afair in grammar name 
+          // NUMBER is associated with Lexer's T_NUMBER variant.
           Production.PRef (ILHelper.make_Sourcet mi.Name,None)
       | Call (_,mi,args) -> 
         begin
             match mi with
-            | DotGrGr     // .>>
+            | DotGrGr ->  // .>>
+                failwith "generation for .>> is not implemented yet"
             | GrGrDot ->  // >>.
                 if List.length args <> 2 then error' ">>. should have 2 parameters"
                 let (l,r) = List.head args, List.nth args 1
                 let (l,r) = inner l, inner r
-                // if l or r is PSeq we should apend lists
-                // btw, we should convert Production.t to Production.elem if necessary
-                let lst : Production.elem<_,_> list = 
-                  let wrap (l: Production.t<_,_>)  = 
-                    if ILHelper.isPSeq l 
-                    then ILHelper.lst_of_PSeq_exn l
-                    else [{omit=false; rule=l; binding=None; checker=None}]
-                  (wrap l) @ (wrap r)
-                Production.PSeq (lst,None)
-            | LsBarGr ->
-                if List.length args <> 2 then error' "<|> should have 1 parameter"
+                let right_bind = nextIdent () |> ILHelper.make_Sourcet |> (fun x -> Some x)
+                let (l,r) = (ILHelper.makeElem None l false None
+                            ,ILHelper.makeElem right_bind r false None)
+                Production.PSeq ([l;r], right_bind)
+            | LsBarGr -> // <|>
+                if List.length args <> 2 then error' "d should have 1 parameter"
                 let (l,r) = List.head args, List.nth args 1
                 let (l,r) = inner l, inner r
                 Production.PAlt (l,r)
@@ -63,18 +66,27 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
             | PPipe3 ->
                match args with
                | [p1;p2;p3;f] ->
-                   let bindings = List.init 3 (fun _ -> None)
+                   let idents = List.init 3 (fun _ -> nextIdent ())
+                   let bindings = List.map ILHelper.make_Sourcet idents
                    let prods = [inner p1; inner p2; inner p3]
                    let content = 
                      List.map2 (fun bind body -> 
-                       EngineHelpers.ILHelper.makeElem bind body false None) bindings prods
-                   Production.PSeq (content,None)
+                       EngineHelpers.ILHelper.makeElem (Some bind) body false None) bindings prods
+                   let code =
+                     match idents with
+                     | [a;b;c] -> sprintf "(%s) %s %s %s" (Unquote.Operators.decompile f) a b c
+                     | _       -> failwith "Bug in generation action code for pipe3"
+                   Production.PSeq (content,Some (ILHelper.make_Sourcet code) )
                | _ -> error' "pipe3 should have 4 parameter"
             | PBarGrGr -> // |>>
                match args with
                | [p;f] -> 
-                   // TODO: add evaluation of action code
-                   inner p
+                   // TODO: Mybe we should match return value of `inner p`
+                   // and modify second element of tuple if 1st element matches PSeq
+                   let ident = nextIdent ()
+                   let elem = ILHelper.makeElem (Some (ILHelper.make_Sourcet ident)) (inner p) false None
+                   let code = sprintf "(%s) %s" (Unquote.Operators.decompile f) ident
+                   Production.PSeq ([elem], Some (ILHelper.make_Sourcet code))
                | _ -> error' "|>> should have 2 parameter"
             | _ -> error' (sprintf "pattern-matching haven't match a part of code (mi.Name = %A)" mi.Name )
         end
