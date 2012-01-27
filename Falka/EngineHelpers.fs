@@ -85,8 +85,8 @@ module ILHelper = begin
   | Production.PSeq (l,_) -> l
   | _ -> failwith "wrong argument of lst_of_PSeq_exn"
   let make_Sourcet s = (s,(0,0))
-  let makeRule name body : IL.Rule.t<_,_> =
-    { name=name; _public=true; args=[]; body=body; metaArgs=[] }
+  let makeRule name body isStartRule : IL.Rule.t<_,_> =
+    { name=name; _public=isStartRule; args=[]; body=body; metaArgs=[] }
 
   let makeDefinition rules fileName : IL.Definition.t<IL.Source.t,IL.Source.t> =
     {info = {fileName=fileName};  head=None; foot=None; grammar=rules }

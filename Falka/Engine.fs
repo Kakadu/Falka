@@ -18,7 +18,7 @@ open Printer
 let error x = raise (EvalFail x)
 let nextIdent = EngineHelpers.makeIdentFunc ()
 
-let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
+let eval : _ -> MethodInfo*Expr -> _ = fun startRuleName (meth,expr) ->
   let matcher e = 
     // Maybe to use `OK of 'a | Error of exn` instead of exception to be sure that
     // all exception were catched
@@ -108,7 +108,8 @@ let eval : MethodInfo*Expr -> _ = fun (meth,expr) ->
         match  matcher body with
           | Some x -> 
               Printf.printf "Rule evaluated!\n"
-              let r = ILHelper.makeRule meth.Name x
+              let isStartRule = (meth.Name = startRuleName)
+              let r = ILHelper.makeRule meth.Name x isStartRule
               let s = Yard.Generators.YardPrinter.Generator.printRule r
               Yard.Generators.YardPrinter.Generator.printTextBox 2 80 s |> Printf.printfn "%s"
               Some r

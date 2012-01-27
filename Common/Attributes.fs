@@ -2,8 +2,9 @@
 
 type parserStrategy = GLR | LALR | RecDes
 
-type ParserClassAttribute () =
+type ParserClassAttribute (start: string) =
     inherit System.Attribute()
+    member this.StartRuleName = start
 
 type ParserFunctionAttribute () =
     inherit System.Attribute()
@@ -35,24 +36,30 @@ let isParserFunction (mem: System.Reflection.MemberInfo) =
     | _ -> None
     ) None
 *)
-let isParserClass (mem: System.Reflection.MemberInfo) = 
-  let attrs = mem.GetCustomAttributes false
-  mem.ReflectedType.IsClass &&
-    (attrs |> Array.exists (fun attr -> attr :? ParserClassAttribute))
+open Falka.Utils
+let isParserClass (mem: System.Reflection.MemberInfo) =
+  if not mem.ReflectedType.IsClass
+  then None
+  else
+    let attrs  = mem.GetCustomAttributes false
+    let f (x: obj) =
+      match x with
+        | :? ParserClassAttribute -> Some ((x :?> ParserClassAttribute).StartRuleName)
+        | _  -> None
+    let ans = Array.filter_map f attrs
+    match ans with
+    | [| |] -> None
+    | [| name |] -> Some name
+    | _ ->
+       printfn "It seems that class %s has more than 1 ParserClassAttribute" mem.Name
+       None
   
 let filter_map f xs = 
   let acc = ref []
   xs |> Array.iter (fun x ->
-    match f x with 
+    match f x with
     | Some y -> acc := y :: !acc
     | None -> ()
   )
   acc
 
-(*
-type FalkaLexer = 
-  abstract member peek: unit -> string
-  //abstract member peekNth: int -> string
-  abstract member tail: unit -> FalkaLexer
-  //abstract member tailN: unit -> FalkaLexer
-*)  

@@ -9,11 +9,14 @@ open Falka.Attributes
 open Falka.Utils
 open Microsoft.FSharp.Quotations
 
-let dll = Assembly.LoadFrom dllname
-let innerParser : System.Type = 
+let (innerParser: System.Type, startRuleName) =
+  let dll = Assembly.LoadFrom dllname
   let rootns = dll.GetType nsname
   let _inn : MemberInfo [] = rootns.GetMember classname
-  (_inn.GetValue 0 :?> System.Type)
+  let parser = _inn.GetValue 0 :?> System.Type
+  match isParserClass parser with
+  | Some startRuleName -> (parser, startRuleName)
+  | None -> failwith (sprintf "It seems that %s has no start Rule defined\n" parser.Name)
 
 let methods =
   // TODO: look at properties too.
@@ -40,7 +43,7 @@ let () =
 
 open EngineHelpers
 let () =
-  let rules = List.map Engine.eval methods
+  let rules = List.map (Engine.eval startRuleName) methods
   let rules = List.filter_map (fun x -> x) rules
   let definition = ILHelper.makeDefinition rules "filename"
   Printf.printfn "\nGrammar is:"

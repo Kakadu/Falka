@@ -43,7 +43,7 @@ let wrap_rec p =
 let wrap_meth s (f : Parser<_,unit>) =
   f s
 
-[<ParserClass>]
+[<ParserClass("expr")>]
 type parser1 () = class
 
   [<ParserFunction>]
