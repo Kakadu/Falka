@@ -2,9 +2,11 @@
 
 type parserStrategy = GLR | LALR | RecDes
 
-type ParserClassAttribute (start: string) =
+type ParserClassAttribute (start: string, tokentype:System.Type, tokens: string) =
     inherit System.Attribute()
     member this.StartRuleName = start
+    member this.Tokens = tokens.Split [| ',' |]
+    member this.TokenType = tokentype
 
 type ParserFunctionAttribute () =
     inherit System.Attribute()
@@ -44,12 +46,12 @@ let isParserClass (mem: System.Reflection.MemberInfo) =
     let attrs  = mem.GetCustomAttributes false
     let f (x: obj) =
       match x with
-        | :? ParserClassAttribute -> Some ((x :?> ParserClassAttribute).StartRuleName)
+        | :? ParserClassAttribute -> Some (x :?> ParserClassAttribute)
         | _  -> None
     let ans = Array.filter_map f attrs
     match ans with
     | [| |] -> None
-    | [| name |] -> Some name
+    | [| attr |] -> Some attr
     | _ ->
        printfn "It seems that class %s has more than 1 ParserClassAttribute" mem.Name
        None

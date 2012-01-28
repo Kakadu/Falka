@@ -8,6 +8,7 @@ open EngineHelpers
 open Printf
 open Yard.Core.IL
 open Swensen
+open Falka.Utils
 
 exception YardRule of Production.t<Source.t, Source.t>
 exception EvalFail of string * Expr
@@ -18,7 +19,7 @@ open Printer
 let error x = raise (EvalFail x)
 let nextIdent = EngineHelpers.makeIdentFunc ()
 
-let eval : _ -> MethodInfo*Expr -> _ = fun startRuleName (meth,expr) ->
+let eval startRuleName (tokenRuleNames: string []) (meth: MethodInfo,expr: Expr) =
   let matcher e = 
     // Maybe to use `OK of 'a | Error of exn` instead of exception to be sure that
     // all exception were catched
@@ -26,12 +27,12 @@ let eval : _ -> MethodInfo*Expr -> _ = fun startRuleName (meth,expr) ->
       let error' s = raise (EvalFail (s,e))
       match e with
       | ThisCall (mi,args) -> 
-          // TODO: we should in some moment understand what names are token names 
-          // and change names. Maybe we should use specific names in Lexer.token union
           // TODO: maybe we should patch FsYaccGenerator to explain generator which 
           // names we should use for tokens and rule names (afair in grammar name 
           // NUMBER is associated with Lexer's T_NUMBER variant.
-          Production.PRef (ILHelper.make_Sourcet mi.Name,None)
+          if Array.exists (fun x -> x.Equals mi.Name) tokenRuleNames
+          then Production.PToken (ILHelper.make_Sourcet mi.Name)
+          else Production.PRef (ILHelper.make_Sourcet mi.Name,None)
       | Call (_,mi,args) -> 
         begin
             match mi with

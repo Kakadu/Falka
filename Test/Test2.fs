@@ -66,7 +66,7 @@ let wrap_meth s (f : Parser<_,_>) =
   f s
 
 open Falka.Attributes
-[<ParserClassAttribute("expr")>]
+[<ParserClassAttribute("expr", typeof<Token.token>, "number,operator" )>]
 type innerParser () = class
   member this.number stream : Result<token, token> = 
     (stream?number : unit -> Result<token,token>) ()

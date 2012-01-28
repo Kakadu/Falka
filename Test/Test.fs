@@ -34,6 +34,8 @@ end
 
 open FParsec
 open Falka.Attributes
+open System
+open System.Collections.Generic
 
 let wrap_rec p =
   let _expr, exprImpl = createParserForwardedToRef()
@@ -43,7 +45,7 @@ let wrap_rec p =
 let wrap_meth s (f : Parser<_,unit>) =
   f s
 
-[<ParserClass("expr")>]
+[<ParserClass("expr", typeof<System.Object>, "" )>]
 type parser1 () = class
 
   [<ParserFunction>]
