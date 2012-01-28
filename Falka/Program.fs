@@ -53,8 +53,11 @@ let () =
           Printf.printfn "%s" s
           System.IO.File.WriteAllLines("gr.yrd", [s])
        )
-  FsYacc.print "asdf.fsy" definition
+  FsYacc.print "asdf.fsy" "Token.token" definition
   ()
 
 let () =
   System.IO.File.WriteAllLines(@"log.txt", !loglines)
+
+let () =
+  FsYacc.runFsYacc "asdf.fsy"

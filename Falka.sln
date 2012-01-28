@@ -7,8 +7,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FalkaCommon", "Common\Falka
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Falka", "Falka\Falka.fsproj", "{D0C52634-78B7-4D71-AC05-5C5A8701FEFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalkaCS", "FalkaCS\FalkaCS.csproj", "{FB6AB6C2-994B-4195-B8E7-D7C99896F454}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "osm", "osm\osm.fsproj", "{627E8497-6665-4728-8219-D0156B113CB1}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TestRunner", "TestRunner\TestRunner.fsproj", "{445A03F2-6A31-4A90-9F73-6E792F22FCA3}"
@@ -53,16 +51,6 @@ Global
 		{D0C52634-78B7-4D71-AC05-5C5A8701FEFB}.Release|Mixed Platforms.Build.0 = Release|x86
 		{D0C52634-78B7-4D71-AC05-5C5A8701FEFB}.Release|x86.ActiveCfg = Release|x86
 		{D0C52634-78B7-4D71-AC05-5C5A8701FEFB}.Release|x86.Build.0 = Release|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Debug|x86.ActiveCfg = Debug|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Debug|x86.Build.0 = Debug|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Release|Any CPU.ActiveCfg = Release|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Release|Mixed Platforms.Build.0 = Release|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Release|x86.ActiveCfg = Release|x86
-		{FB6AB6C2-994B-4195-B8E7-D7C99896F454}.Release|x86.Build.0 = Release|x86
 		{627E8497-6665-4728-8219-D0156B113CB1}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{627E8497-6665-4728-8219-D0156B113CB1}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{627E8497-6665-4728-8219-D0156B113CB1}.Debug|Mixed Platforms.Build.0 = Debug|x86
