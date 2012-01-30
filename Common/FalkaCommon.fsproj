@@ -52,6 +52,8 @@
     <Compile Include="Attributes.fs" />
     <Compile Include="Comb.fsi" />
     <Compile Include="Comb.fs" />
+    <Compile Include="Comb2.fsi" />
+    <Compile Include="Comb2.fs" />
     <Compile Include="Dynamics.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />

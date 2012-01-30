@@ -1,0 +1,28 @@
+{
+module Test3.Lexer
+open Microsoft.FSharp.Text.Lexing 
+open System
+open Printf
+
+type Token = 
+  | Number of int
+  | Operator of string
+  | Eof
+
+}
+let digit       = ['0'-'9']   
+let int         = '-'?digit+  
+
+rule tokenize = parse   
+| int			{ 
+                    let s = LexBuffer<_>.LexemeString(lexbuf)
+                    Printf.printfn "lexeme = %A" s
+                    Number( Int32.Parse(s) )
+                }
+| "+" |"-"|"*"
+| "/"           { 
+                    let s = LexBuffer<_>.LexemeString(lexbuf)
+                    Printf.printfn "lexeme = %A" s
+                    Operator ( LexBuffer<_>.LexemeString(lexbuf) ) 
+                }
+| eof           { Eof }

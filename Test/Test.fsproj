@@ -38,25 +38,25 @@
     <Reference Include="FParsecCS">
       <HintPath>..\dlls\FParsecCS.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.PowerPack">
+      <HintPath>..\dlls\FSharp.PowerPack.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Test.fs" />
     <Compile Include="Test2.fs" />
+    <Compile Include="lll.fs" />
+    <Compile Include="Test3.fs" />
+  </ItemGroup>
+  <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\FalkaCommon.fsproj">
       <Name>FalkaCommon</Name>
       <Project>{05806d3f-2dc4-4a4e-8003-173363936fe0}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\osm\osm.fsproj">
-      <Name>osm</Name>
-      <Project>{627e8497-6665-4728-8219-d0156b113cb1}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

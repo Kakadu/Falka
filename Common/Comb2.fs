@@ -1,4 +1,4 @@
-module Falka.Comb
+module Falka.Comb2
 
 type ITokenLexer<'token> = 
   abstract member is_empty : unit -> bool

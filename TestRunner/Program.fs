@@ -36,5 +36,27 @@ let () =
         printfn "ans = %A" ans
         printfn "tail = %A" tail
     | Failed s -> printfn "Parsing failed: %s\n" s
-  let _ = Console.ReadKey ()
   ()
+
+
+// Testing test3
+open Microsoft.FSharp.Text.Lexing 
+open System
+open Printf
+open Test3.Lexer
+let () = 
+  let reader = new System.IO.StringReader(@"1+2+3+4")
+  let lexbuf = LexBuffer<_>.FromTextReader reader
+  let rec inner () = 
+    match Test3.Lexer.tokenize lexbuf with
+    | Eof -> 
+        printfn "end of tokenization"
+    | Number n as t -> 
+        printfn "%A" t
+        inner ()
+    | Operator x as t  -> 
+        printfn "%A" t
+        inner ()
+  inner ()
+
+let _ = Console.ReadKey ()
