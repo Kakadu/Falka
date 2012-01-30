@@ -1,5 +1,5 @@
 ﻿module TestRunner
-
+open System
 
 (* fparsec *)
 open FParsec
@@ -36,4 +36,5 @@ let () =
         printfn "ans = %A" ans
         printfn "tail = %A" tail
     | Failed s -> printfn "Parsing failed: %s\n" s
+  let _ = Console.ReadKey ()
   ()

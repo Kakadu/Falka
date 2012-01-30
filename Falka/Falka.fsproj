@@ -39,10 +39,10 @@
       <HintPath>..\dlls\Common.dll</HintPath>
     </Reference>
     <Reference Include="FParsec">
-      <HintPath>FParsec.dll</HintPath>
+      <HintPath>..\dlls\FParsec.dll</HintPath>
     </Reference>
     <Reference Include="FParsecCS">
-      <HintPath>FParsecCS.dll</HintPath>
+      <HintPath>..\dlls\FParsecCS.dll</HintPath>
     </Reference>
     <Reference Include="FsYaccPrinter">
       <HintPath>..\dlls\FsYaccPrinter.dll</HintPath>

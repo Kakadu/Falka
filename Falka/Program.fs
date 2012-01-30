@@ -61,3 +61,5 @@ let () =
 
 let () =
   FsYacc.runFsYacc "asdf.fsy"
+
+let _ = System.Console.ReadKey ()
