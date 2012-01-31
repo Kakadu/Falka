@@ -8,7 +8,9 @@ open System.Reflection
 let outAssembly = @"Tushie.dll"
 let tempFileName = @"Tushie.fs"
 let newModule = @"GeneratedParser.Parser"
-let referencedAssemblies = ["System.dll"; "FSharp.PowerPack.dll"; "Common.dll"; "Unquote.dll"; @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
+let referencedAssemblies = 
+  ["System.dll"; "FSharp.PowerPack.dll"; "Common.dll"; "Unquote.dll"; 
+   @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
 
 let getSource (initialDllName,nsname,classname) =
   let h = new StreamWriter (tempFileName)
@@ -25,7 +27,7 @@ let compile ((dllname,nsname,classname) as classinfo) (srcFiles: string list) =
   getSource classinfo
   let filenames = (tempFileName :: srcFiles) |> List.toArray
   printfn "Executing F# compiler"
-  let res = fsProvider.CompileAssemblyFromFile (cparams, filenames)
+  let res = fsProvider.CompileAssemblyFromFile (cparams, filenames)  
   if res.Errors.Count > 0
   then
     printfn "Output of F# compiler"

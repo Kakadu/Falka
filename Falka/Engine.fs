@@ -16,6 +16,7 @@ exception EvalFail of string * Expr
 module Printer = Yard.Generators.YardPrinter.Generator
 open Printer 
 
+let decompile f = f |> Unquote.Operators.reduce |> Unquote.Operators.decompile
 let error x = raise (EvalFail x)
 let nextIdent = EngineHelpers.makeIdentFunc ()
 
@@ -75,7 +76,7 @@ let eval startRuleName (tokenRuleNames: string []) (meth: MethodInfo,expr: Expr)
                        EngineHelpers.ILHelper.makeElem (Some bind) body false None) bindings prods
                    let code =
                      match idents with
-                     | [a;b;c] -> sprintf "(%s) %s %s %s" (Unquote.Operators.decompile f) a b c
+                     | [a;b;c] -> sprintf "(%s) %s %s %s" (decompile f) a b c
                      | _       -> failwith "Bug in generation action code for pipe3"
                    Production.PSeq (content,Some (ILHelper.make_Sourcet code) )
                | _ -> error' "pipe3 should have 4 parameter"
@@ -86,7 +87,7 @@ let eval startRuleName (tokenRuleNames: string []) (meth: MethodInfo,expr: Expr)
                    // and modify second element of tuple if 1st element matches PSeq
                    let ident = nextIdent ()
                    let elem = ILHelper.makeElem (Some (ILHelper.make_Sourcet ident)) (inner p) false None
-                   let code = sprintf "(%s) %s" (Unquote.Operators.decompile f) ident
+                   let code = sprintf "(%s) %s" (decompile f) ident
                    Production.PSeq ([elem], Some (ILHelper.make_Sourcet code))
                | _ -> error' "|>> should have 2 parameter"
             | _ -> error' (sprintf "pattern-matching haven't match a part of code (mi.Name = %A)" mi.Name )

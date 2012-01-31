@@ -45,7 +45,8 @@ open EngineHelpers
 let () =
   let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
   let rules = List.filter_map (fun x -> x) rules
-  let headtext = sprintf "\nopen %s\nopen Microsoft.FSharp.Quotations\n" nsname
+  let headtext = sprintf "\nopen %s\nopen %s\nopen %s\n" 
+                   nsname "Microsoft.FSharp.Quotations" "Microsoft.FSharp.Quotations.Patterns"
   let definition = ILHelper.makeDefinition rules "filename" (Some headtext)
   Printf.printfn "\nGrammar is:"
   let () = 

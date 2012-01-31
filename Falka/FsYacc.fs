@@ -8,8 +8,8 @@ let print filename tokentype gr =
 
 open System.Diagnostics
 let fsyacccmd = @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
-let runFsYacc moduleName openModule filename =
-  let args = sprintf "--module %s --open %s %s" moduleName openModule filename
+let runFsYacc moduleName _ filename =
+  let args = sprintf "--module %s %s" moduleName filename
   let p = new Process ()
   p.StartInfo.FileName <- fsyacccmd
   p.StartInfo.Arguments <- args
