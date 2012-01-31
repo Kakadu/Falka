@@ -3,7 +3,7 @@ open Falka
 
 let (dllname, nsname, classname) = 
   //(@"Test.dll", @"Test", @"parser1")
-  (@"Test.dll", @"Test2", @"innerParser")
+  (@"Test.dll", @"Test2", @"InnerParser")
 open System.Reflection
 open Falka.Attributes
 open Falka.Utils
@@ -45,7 +45,8 @@ open EngineHelpers
 let () =
   let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
   let rules = List.filter_map (fun x -> x) rules
-  let definition = ILHelper.makeDefinition rules "filename"
+  let headtext = sprintf "\nopen %s\n" nsname
+  let definition = ILHelper.makeDefinition rules "filename" (Some headtext)
   Printf.printfn "\nGrammar is:"
   let () = 
     Yard.Generators.YardPrinter.Generator.generate definition 
@@ -66,8 +67,8 @@ let evalNewAssembly (asm: Assembly) =
   ()
 
 let () =
-  FsYacc.runFsYacc "asdf.fsy"
-  match CodeGen.compile (dllname,nsname,classname) with
+  FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
+  match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"] with
   | None  -> printfn "Failed to compile new class"
   | Some x  -> evalNewAssembly x
 

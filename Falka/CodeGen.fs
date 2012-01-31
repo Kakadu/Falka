@@ -5,25 +5,28 @@ open Microsoft.FSharp.Compiler.CodeDom
 open System.CodeDom.Compiler
 open System.Reflection
 
-let outAssembly = "Tushie.dll"
-let tempFileName = "Tushie.fs"
+let outAssembly = @"Tushie.dll"
+let tempFileName = @"Tushie.fs"
+let newModule = @"GeneratedParser.Parser"
+let referencedAssemblies = ["System.dll"; "FSharp.PowerPack.dll"]
 
 let getSource (initialDllName,nsname,classname) =
   let h = new StreamWriter (tempFileName)
-  fprintf h "module Asdf\ntype innerParser () = class\n  member this.ololo = 1\nend\n" 
+  fprintf h "module %s\n" newModule
+  fprintf h "type innerParser () = class\n  member this.ololo = 1\nend\n"
   h.Close ()
 
-let compile ((dllname,nsname,classname) as classinfo) =
+let compile ((dllname,nsname,classname) as classinfo) (srcFiles: string list) =
   let cparams = new CompilerParameters ()
   cparams.OutputAssembly <- outAssembly
-  let _ = cparams.ReferencedAssemblies.Add "System.dll"
-  let _ = cparams.ReferencedAssemblies.Add dllname
+  List.iter (fun x -> ignore (cparams.ReferencedAssemblies.Add x)) (dllname :: referencedAssemblies)
   cparams.GenerateExecutable <- false
   let fsProvider = new FSharpCodeProvider ()
   getSource classinfo
+  let filenames = (tempFileName :: srcFiles) |> List.toArray
   printfn "Executing F# compiler"
-  let res = fsProvider.CompileAssemblyFromFile (cparams, tempFileName)
-  if res.Errors.Count >0 
+  let res = fsProvider.CompileAssemblyFromFile (cparams, filenames)
+  if res.Errors.Count > 0
   then
     printfn "Output of F# compiler"
     for s in res.Errors do

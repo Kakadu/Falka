@@ -84,12 +84,16 @@ module ILHelper = begin
   let lst_of_PSeq_exn = function
   | Production.PSeq (l,_) -> l
   | _ -> failwith "wrong argument of lst_of_PSeq_exn"
-  let make_Sourcet s = (s,(0,0))
+  let make_Sourcet s: Source.t = (s,(0,0))
   let makeRule name body isStartRule : IL.Rule.t<_,_> =
     { name=name; _public=isStartRule; args=[]; body=body; metaArgs=[] }
 
-  let makeDefinition rules fileName : IL.Definition.t<IL.Source.t,IL.Source.t> =
-    {info = {fileName=fileName};  head=None; foot=None; grammar=rules }
+  let makeDefinition rules fileName (h: string option): Definition.t<Source.t,Source.t> =
+    let h =
+      match h with
+      | Some x -> Some (make_Sourcet x)
+      | None -> None
+    {info = {fileName=fileName};  head=h; foot=None; grammar=rules }
 
   let makeElem b rule omit checker : IL.Production.elem<Source.t,Source.t> =
     { rule=rule; omit=omit; checker=checker; binding=b }

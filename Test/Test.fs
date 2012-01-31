@@ -46,8 +46,7 @@ let wrap_meth s (f : Parser<_,unit>) =
   f s
 
 [<ParserClass("expr", typeof<System.Object>, "" )>]
-type parser1 () = class
-
+type Parser1 () = class
   [<ParserFunction>]
   [<ReflectedDefinition>]
   member this.sekv stream = 

@@ -9,7 +9,7 @@ let test p str =
     | Failure(errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 let () = 
-  let c = new Test.parser1 ()
+  let c = new Test.Parser1 ()
 (*  let _ = test c.number "1.2 "
   let _ = test c.floatlist "[1.2,3.5]" *)
   let _ = test c.expr "1+2+3+4" 
@@ -27,7 +27,7 @@ let () =
                 (fun (msg,_,_) -> 
                   printfn "Failed tokenization. %s" msg
                   failwith msg)
-  let p = new Test2.innerParser ()
+  let p = new Test2.InnerParser ()
   let lexer = new Test2.innerLexer (tokens)
   let ans = p.expr lexer
   let () = 

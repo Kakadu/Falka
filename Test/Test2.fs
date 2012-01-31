@@ -10,9 +10,10 @@ module Token =
   type token = 
     | TNumber of float
     | TOperator of string
-  type ast = 
-    | Number of float
-    | Expr of string * ast * ast
+type ast =
+  | Number of float
+  | Expr of string * ast * ast
+
 open Token  
 open FParsec
 
@@ -67,7 +68,7 @@ let wrap_meth s (f : Parser<_,_>) =
 
 open Falka.Attributes
 [<ParserClassAttribute("expr", typeof<Token.token>, "number,operator" )>]
-type innerParser () = class
+type InnerParser () = class
   member this.number stream : Result<token, token> = 
     (stream?number : unit -> Result<token,token>) ()
   member this.operator stream : Result<token, token> = 
