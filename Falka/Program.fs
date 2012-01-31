@@ -59,7 +59,13 @@ let () =
 let () =
   System.IO.File.WriteAllLines(@"log.txt", !loglines)
 
+let evalNewAssembly (asm: Assembly) = 
+  
+  ()
 let () =
   FsYacc.runFsYacc "asdf.fsy"
+  match CodeGen.compile dllname with
+  | None  -> printfn "Failed to compile new class"
+  | Some x  -> evalNewAssembly x
 
-let _ = System.Console.ReadKey ()
+//let _ = System.Console.ReadKey ()

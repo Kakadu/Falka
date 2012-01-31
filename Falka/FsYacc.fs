@@ -7,7 +7,7 @@ let print filename tokentype gr =
   System.IO.File.WriteAllLines(filename, [s])
 
 open System.Diagnostics
-let fsyacccmd = @"D:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
+let fsyacccmd = @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
 let runFsYacc filename =
   let p = new Process ()
   p.StartInfo.FileName <- fsyacccmd
