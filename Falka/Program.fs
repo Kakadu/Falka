@@ -60,11 +60,14 @@ let () =
   System.IO.File.WriteAllLines(@"log.txt", !loglines)
 
 let evalNewAssembly (asm: Assembly) = 
-  
+  let p = asm.GetType "Asdf+innerParser"
+  p.GetMembers () |> Array.map (fun x -> x.ToString()) |> Array.iter (fun x-> printfn "%A" x)
+  printfn "Ended"
   ()
+
 let () =
   FsYacc.runFsYacc "asdf.fsy"
-  match CodeGen.compile dllname with
+  match CodeGen.compile (dllname,nsname,classname) with
   | None  -> printfn "Failed to compile new class"
   | Some x  -> evalNewAssembly x
 
