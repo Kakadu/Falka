@@ -45,14 +45,12 @@
       <HintPath>..\dlls\FParsecCS.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.CodeDom, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809" />
+    <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809" />
     <Reference Include="FsYaccPrinter">
       <HintPath>..\dlls\FsYaccPrinter.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
     <Reference Include="Unquote">
       <HintPath>..\dlls\Unquote.dll</HintPath>
     </Reference>

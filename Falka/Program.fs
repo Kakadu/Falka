@@ -45,7 +45,7 @@ open EngineHelpers
 let () =
   let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
   let rules = List.filter_map (fun x -> x) rules
-  let headtext = sprintf "\nopen %s\n" nsname
+  let headtext = sprintf "\nopen %s\nopen Microsoft.FSharp.Quotations\n" nsname
   let definition = ILHelper.makeDefinition rules "filename" (Some headtext)
   Printf.printfn "\nGrammar is:"
   let () = 
@@ -54,7 +54,7 @@ let () =
           Printf.printfn "%s" s
           System.IO.File.WriteAllLines("gr.yrd", [s])
        )
-  FsYacc.print "asdf.fsy" "Token.token" definition
+  FsYacc.print "asdf.fsy" "token" definition
   ()
 
 let () =
@@ -73,3 +73,5 @@ let () =
   | Some x  -> evalNewAssembly x
 
 //let _ = System.Console.ReadKey ()
+
+let _ = Expr.TupleGet

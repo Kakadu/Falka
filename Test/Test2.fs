@@ -6,19 +6,17 @@
 // и мой стрим будет стрим токенов. Где по динамикам будут вызываться парсер-функции как мемберы
 // этого стрима токенов.
 (* Начнем с парсинга арифметики. *) 
-module Token = 
-  type token = 
-    | TNumber of float
-    | TOperator of string
+type token =
+  | TNumber of float
+  | TOperator of string
 type ast =
   | Number of float
-  | Expr of string * ast * ast
+  | Exprr of string * ast * ast
 
-open Token  
 open FParsec
 
 type innerTokenizer () = class
-  member this.number = pfloat |>> (fun x -> Token.TNumber x)
+  member this.number = pfloat |>> (fun x -> TNumber x)
   member this.operator = 
     let f x = TOperator ((string)x)
     (pchar '+' <|> pchar '-' <|> pchar '*' <|> pchar '/') |>> f
@@ -26,11 +24,11 @@ type innerTokenizer () = class
 end
 
 open Falka.Comb
-type innerLexer (lst : Token.token list) = class
-  interface ITokenLexer<Token.token> with
+type innerLexer (lst : token list) = class
+  interface ITokenLexer<token> with
     member this.is_empty () = List.isEmpty lst
     member this.peek () = List.head lst
-    member this.tail () = new innerLexer (List.tail lst) :> ITokenLexer<Token.token>
+    member this.tail () = new innerLexer (List.tail lst) :> ITokenLexer<token>
   (* next members will be invoked via Dynamic *)
   member this.number () : Result<token, token> =
     let o = this :> ITokenLexer<token>
@@ -67,29 +65,29 @@ let wrap_meth s (f : Parser<_,_>) =
   f s
 
 open Falka.Attributes
-[<ParserClassAttribute("expr", typeof<Token.token>, "number,operator" )>]
+[<ParserClassAttribute("Expr", typeof<token>, "Number,Operator" )>]
 type InnerParser () = class
-  member this.number stream : Result<token, token> = 
+  member this.Number stream : Result<token, token> = 
     (stream?number : unit -> Result<token,token>) ()
-  member this.operator stream : Result<token, token> = 
+  member this.Operator stream : Result<token, token> = 
     (stream?operator : unit -> Result<token,token>) ()
 
   [<ParserFunction>]
   [<ReflectedDefinition>]  
-  member this.twonumbers stream = 
-    let body = this.number >>. this.number
+  member this.Twonumbers stream =
+    let body = this.Number >>. this.Number
     wrap_meth stream body
   
   [<ParserFunction>]
   [<ReflectedDefinition>]  
-  member this.expr stream = 
+  member this.Expr stream =
     let body = 
-        (pipe3 this.number this.operator this.expr (fun a b c -> 
+        (pipe3 this.Number this.Operator this.Expr (fun a b c -> 
           match (a,b) with
-          | (TNumber a,TOperator x) -> Expr (x,Number a,c)
+          | (TNumber a,TOperator x) -> Exprr (x,Number a,c)
           | _ -> failwith "some bug here")
         ) 
-        <|> (this.number |>> (function TNumber x -> Number x | _ -> failwith "some bug") )  
+        <|> (this.Number |>> (function TNumber x -> Number x | _ -> failwith "some bug") )  
     wrap_meth stream body
   
 end

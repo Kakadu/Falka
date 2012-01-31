@@ -29,7 +29,7 @@ let () =
                   failwith msg)
   let p = new Test2.InnerParser ()
   let lexer = new Test2.innerLexer (tokens)
-  let ans = p.expr lexer
+  let ans = p.Expr lexer
   let () = 
     match ans with
     | Success (ans, tail) ->
