@@ -10,8 +10,8 @@ type token =
   | TNumber of float
   | TOperator of string
 type ast =
-  | Number of float
-  | Exprr of string * ast * ast
+  | ANumber of float
+  | AExpr of string * ast * ast
 
 open FParsec
 
@@ -65,7 +65,7 @@ let wrap_meth s (f : Parser<_,_>) =
   f s
 
 open Falka.Attributes
-[<ParserClassAttribute("Expr", typeof<token>, "Number,Operator" )>]
+[<ParserClassAttribute("Expression", typeof<token>, "Number,Operator" )>]
 type InnerParser () = class
   member this.Number stream : Result<token, token> = 
     (stream?number : unit -> Result<token,token>) ()
@@ -80,14 +80,14 @@ type InnerParser () = class
   
   [<ParserFunction>]
   [<ReflectedDefinition>]  
-  member this.Expr stream =
+  member this.Expression stream =
     let body = 
-        (pipe3 this.Number this.Operator this.Expr (fun a b c -> 
+        (pipe3 this.Number this.Operator this.Expression (fun a b c -> 
           match (a,b) with
-          | (TNumber a,TOperator x) -> Exprr (x,Number a,c)
+          | (TNumber a,TOperator x) -> AExpr (x, ANumber a,c)
           | _ -> failwith "some bug here")
         ) 
-        <|> (this.Number |>> (function TNumber x -> Number x | _ -> failwith "some bug") )  
+        <|> (this.Number |>> (function TNumber x -> ANumber x | _ -> failwith "some bug") )  
     wrap_meth stream body
   
 end

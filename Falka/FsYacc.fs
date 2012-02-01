@@ -19,6 +19,11 @@ let runFsYacc moduleName _ filename =
   let _ = p.Start ()
 
   let output = p.StandardOutput.ReadToEnd ()
-  p.WaitForExit ()
-  printfn "FsYacc finised."
-  printfn "%s\n\n" output
+  p.WaitForExit ()  
+  if p.ExitCode<>0
+  then 
+    printfn "%s\n\n" output
+    false
+  else
+    printfn "FsYacc finised successfully"
+    true

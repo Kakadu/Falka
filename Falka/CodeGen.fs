@@ -9,8 +9,9 @@ let outAssembly = @"Tushie.dll"
 let tempFileName = @"Tushie.fs"
 let newModule = @"GeneratedParser.Parser"
 let referencedAssemblies = 
-  ["System.dll"; "FSharp.PowerPack.dll"; "Common.dll"; "Unquote.dll"; 
-   @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
+  ["System.dll"; "FSharp.PowerPack.dll"; "Common.dll"; "Unquote.dll"
+  ;@"C:\Program Files\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0\FSharp.Core.dll"
+  ;@"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
 
 let getSource (initialDllName,nsname,classname) =
   let h = new StreamWriter (tempFileName)

@@ -42,11 +42,15 @@ let () =
   loglines := lst
 
 open EngineHelpers
+
+let opens = 
+  [nsname; "Microsoft.FSharp.Quotations"; "Microsoft.FSharp.Quotations.Patterns"
+  ; "Microsoft.FSharp.Compiler"; "Microsoft.FSharp.Compiler.Refection"] |> List.toSeq
 let () =
   let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
-  let rules = List.filter_map (fun x -> x) rules
-  let headtext = sprintf "\nopen %s\nopen %s\nopen %s\n" 
-                   nsname "Microsoft.FSharp.Quotations" "Microsoft.FSharp.Quotations.Patterns"
+  let rules = List.filter_map (fun x -> x) rules  
+  let headtext = sprintf "\nopen %s\n" (String.concat "\nopen " opens)
+                     
   let definition = ILHelper.makeDefinition rules "filename" (Some headtext)
   Printf.printfn "\nGrammar is:"
   let () = 
@@ -68,11 +72,12 @@ let evalNewAssembly (asm: Assembly) =
   ()
 
 let () =
-  FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
-  match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"] with
-  | None  -> printfn "Failed to compile new class"
-  | Some x  -> evalNewAssembly x
+  if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
+  then
+    match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"] with
+    | None  -> printfn "Failed to compile new class"
+    | Some x  -> evalNewAssembly x
+  else
+    printfn "Error while executing FsYacc"
 
 //let _ = System.Console.ReadKey ()
-
-let _ = Expr.TupleGet
