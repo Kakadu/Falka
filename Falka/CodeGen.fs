@@ -10,13 +10,14 @@ let tempFileName = @"Tushie.fs"
 let newModule = @"GeneratedParser.Parser"
 let referencedAssemblies = 
   ["System.dll"; "FSharp.PowerPack.dll"; "FalkaCommon.dll"
+  ;"FParsec.dll"; "FParsecCS.dll"
   ;@"C:\Program Files\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0\FSharp.Core.dll"
   ;@"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
 
 let getSource (initialDllName,nsname,classname) =
   let h = new StreamWriter (tempFileName)
   fprintf h "module %s\n" newModule
-  fprintf h "type innerParser () = class\n  member this.ololo = 1\nend\n"
+  fprintf h "type InnerParser () = class\n  member this.ololo = 1\nend\n"
   h.Close ()
 
 let compile ((dllname,nsname,classname) as classinfo) (srcFiles: string list) =

@@ -63,14 +63,15 @@ let () =
           Printf.printfn "%s" s
           System.IO.File.WriteAllLines("gr.yrd", [s])
        )
-  FsYacc.print "asdf.fsy" "token" definition
+  FsYacc.print "asdf.fsy" "Test2.token" definition
   ()
 
 let () =
   System.IO.File.WriteAllLines(@"log.txt", !loglines)
 
 let evalNewAssembly (asm: Assembly) = 
-  let p = asm.GetType "Asdf+innerParser"
+  let fullName = CodeGen.newModule + "+InnerParser"
+  let p = asm.GetType fullName
   p.GetMembers () |> Array.map (fun x -> x.ToString()) |> Array.iter (fun x-> printfn "%A" x)
   printfn "Ended"
   ()
@@ -79,8 +80,8 @@ let () =
   if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
   then
     match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"] with
-    | None  -> printfn "Failed to compile new class"
-    | Some x  -> evalNewAssembly x
+    | Some x when x <> null -> evalNewAssembly x
+    | _ -> printfn "Failed to compile new class"
   else
     printfn "Error while executing FsYacc"
 
