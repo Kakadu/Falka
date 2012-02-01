@@ -38,12 +38,6 @@
     <Reference Include="Common">
       <HintPath>..\dlls\Common.dll</HintPath>
     </Reference>
-    <Reference Include="FParsec">
-      <HintPath>..\dlls\FParsec.dll</HintPath>
-    </Reference>
-    <Reference Include="FParsecCS">
-      <HintPath>..\dlls\FParsecCS.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Compiler.CodeDom, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809" />
     <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809" />
     <Reference Include="FsYaccPrinter">
@@ -51,9 +45,7 @@
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="Unquote">
-      <HintPath>..\dlls\Unquote.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="YardPrinter">
       <HintPath>..\dlls\YardPrinter.dll</HintPath>
     </Reference>
@@ -74,6 +66,11 @@
     <ProjectReference Include="..\Test\Test.fsproj">
       <Name>Test</Name>
       <Project>{a921bb36-2f92-4e8a-8bf5-1009eaeaf99e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Unquote\Unquote.fsproj">
+      <Name>Unquote</Name>
+      <Project>{80f427b5-3aed-4d52-bc86-850a40427ecf}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

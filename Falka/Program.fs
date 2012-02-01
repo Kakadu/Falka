@@ -44,8 +44,12 @@ let () =
 open EngineHelpers
 
 let opens = 
-  [nsname; "Microsoft.FSharp.Quotations"; "Microsoft.FSharp.Quotations.Patterns"
-  ; "Microsoft.FSharp.Compiler"; "Microsoft.FSharp.Compiler.Refection"] |> List.toSeq
+    [ nsname
+      ; "Microsoft.FSharp.Quotations"
+      ; "Microsoft.FSharp.Quotations.Patterns"
+      ; "Microsoft.FSharp.Compiler"
+      ; "Microsoft.FSharp.Compiler.Reflection"
+    ] |> seq
 let () =
   let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
   let rules = List.filter_map (fun x -> x) rules  

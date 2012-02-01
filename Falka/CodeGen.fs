@@ -9,7 +9,7 @@ let outAssembly = @"Tushie.dll"
 let tempFileName = @"Tushie.fs"
 let newModule = @"GeneratedParser.Parser"
 let referencedAssemblies = 
-  ["System.dll"; "FSharp.PowerPack.dll"; "Common.dll"; "Unquote.dll"
+  ["System.dll"; "FSharp.PowerPack.dll"; "FalkaCommon.dll"
   ;@"C:\Program Files\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0\FSharp.Core.dll"
   ;@"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
 
@@ -22,6 +22,7 @@ let getSource (initialDllName,nsname,classname) =
 let compile ((dllname,nsname,classname) as classinfo) (srcFiles: string list) =
   let cparams = new CompilerParameters ()
   cparams.OutputAssembly <- outAssembly
+  cparams.IncludeDebugInformation <- true
   List.iter (fun x -> ignore (cparams.ReferencedAssemblies.Add x)) (referencedAssemblies @ [dllname])
   cparams.GenerateExecutable <- false
   let fsProvider = new FSharpCodeProvider ()
