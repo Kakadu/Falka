@@ -3,7 +3,7 @@ open Yard.Generators.FsYaccPrinter
 open Printf
 
 let print filename tokentype gr =
-  let s = Yard.Generators.FsYaccPrinter.Generator.generate gr tokentype
+  let s = Yard.Generators.FsYaccPrinter.Generator.generate2 gr tokentype
   System.IO.File.WriteAllLines(filename, [s])
 
 open System.Diagnostics

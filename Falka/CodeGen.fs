@@ -27,7 +27,6 @@ let getSource (nsname,classname) startRule killedRules =
   fprintfn h "type InnerParser () = class"
   fprintfn h "  inherit %s.%s ()" nsname classname
   fprintfn h "  override this.%s (stream: ITokenLexer<_>) =" startRule
-  fprintfn h "    let lexbuf = ref (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")"
   fprintfn h "    let curstream = ref stream"
   fprintfn h "    let tokenizer (lexbuf: LexBuffer<_>) ="
   fprintfn h "      if (!curstream).is_empty ()"
@@ -38,7 +37,7 @@ let getSource (nsname,classname) startRule killedRules =
   fprintfn h "        lexbuf.StartPos <- Position.FirstLine(\"%s\")" "filename" 
   fprintfn h "        lexbuf.EndPos <- new Position(\"%s\",0,0,String.length ans?Item)" "filename"
   fprintfn h "        ans"
-  fprintfn h "    let res = GeneratedParser.Yacc.%s tokenizer lexbuf" startRule
+  fprintfn h "    let res = GeneratedParser.Yacc.%s tokenizer (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")" startRule
   fprintfn h "    Success (res, !curstream)\n"
   fprintfn h "end"
   h.Close ()

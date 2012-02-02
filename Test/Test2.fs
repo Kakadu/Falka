@@ -30,24 +30,24 @@ type innerLexer (lst : token list) = class
     member this.peek () = List.head lst
     member this.tail () = new innerLexer (List.tail lst) :> ITokenLexer<token>
   (* next members will be invoked via Dynamic *)
-  member this.number () : Result<token, token> =
+  member this.number () : Result<float, token> =
     let o = this :> ITokenLexer<token>
     if o.is_empty () 
     then Failed "input is empty"
     else match o.peek () with
-         | TNumber x as ans -> 
+         | TNumber x ->
              let temp = o.tail ()
-             Success (ans, temp)
+             Success (x, temp)
          | _ -> Failed "cant parse number"
 
-  member this.operator () : Result<token, token> =
+  member this.operator () : Result<string, token> =
     let o = this :> ITokenLexer<token>
     if o.is_empty ()
     then Failed "input is empty"
     else match o.peek () with
-         | TOperator p as ans -> 
+         | TOperator p ->
              let temp = o.tail ()
-             Success (ans, temp)
+             Success (p, temp)
          | _ -> Failed "cant parse operator"
   override this.ToString () = lst.ToString ()
 end
@@ -67,29 +67,27 @@ let wrap_meth s (f : Parser<_,_>) =
 open Falka.Attributes
 [<ParserClassAttribute("Expression", typeof<token>, "Number,Operator" )>]
 type InnerParser () = class
-  member this.Number stream : Result<token, token> = 
-    (stream?number : unit -> Result<token,token>) ()
-  member this.Operator stream : Result<token, token> = 
-    (stream?operator : unit -> Result<token,token>) ()
+  [<LexerCombinator("Number","float")>]
+  member this.Number stream : Result<float, token> =
+    (stream?number : unit -> Result<float,token>) ()
+  [<LexerCombinator("Operator","string")>]
+  member this.Operator stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
 
-  abstract member Twonumbers: ITokenLexer<token> -> Result<token,token>
+  abstract member Twonumbers: ITokenLexer<token> -> Result<ast,token>
   [<ParserFunction>]
   [<ReflectedDefinition>]  
   default this.Twonumbers stream =
-    let body = this.Number >>. this.Number
+    let body = this.Number >>. this.Number |>> (fun s -> ANumber s)
     wrap_meth stream body
 
   abstract member Expression: ITokenLexer<token> -> Result<ast,token>
   [<ParserFunction>]
-  [<ReflectedDefinition>]  
+  [<ReflectedDefinition>]
   default this.Expression stream =
     let body = 
-        (pipe3 this.Number this.Operator this.Expression (fun a b c -> 
-          match (a,b) with
-          | (TNumber a,TOperator x) -> AExpr (x, ANumber a,c)
-          | _ -> failwith "some bug here")
-        ) 
-        <|> (this.Number |>> (function TNumber x -> ANumber x | _ -> failwith "some bug") )  
+        (pipe3 this.Number this.Operator this.Expression (fun a op c -> AExpr (op, ANumber a,c)))
+        <|> (this.Number |>> (fun x -> ANumber x) )
     wrap_meth stream body
   
 end

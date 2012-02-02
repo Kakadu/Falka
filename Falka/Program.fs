@@ -1,13 +1,14 @@
 ﻿module Falka.Main
 open Falka
-
-let (dllname, nsname, classname) = 
-  //(@"Test.dll", @"Test", @"parser1")
-  (@"Test.dll", @"Test2", @"InnerParser")
+open Printf
 open System.Reflection
 open Falka.Attributes
 open Falka.Utils
 open Microsoft.FSharp.Quotations
+
+let (dllname, nsname, classname) = 
+  //(@"Test.dll", @"Test", @"parser1")
+  (@"Test.dll", @"Test2", @"InnerParser")
 
 let (innerParser: System.Type, startRuleName, tokenType, tokenRuleNames) =
   let dll = Assembly.LoadFrom dllname
@@ -15,7 +16,7 @@ let (innerParser: System.Type, startRuleName, tokenType, tokenRuleNames) =
   let _inn : MemberInfo [] = rootns.GetMember classname
   let parser = _inn.GetValue 0 :?> System.Type
   match isParserClass parser with
-  | Some attr -> (parser, attr.StartRuleName, attr.TokenType, attr.Tokens)
+  | Some attr -> (parser, attr.StartRuleName, attr.TokensType, attr.Tokens)
   | None -> failwith (sprintf "It seems that %s has no start Rule defined\n" parser.Name)
 
 let methods =
@@ -31,6 +32,11 @@ let methods =
     | None -> None
     | Some body -> Some (m,body) 
   )
+
+let lexerHelperMethods =
+  innerParser.GetMethods () |> Array.filter_map (fun mi -> 
+    mi |> isLexerCombinatorFunction |> Option.map (fun x -> (mi,x))
+  ) |> Array.map (fun (mi,attr) -> (mi.Name,attr.TokenType) )
 
 let show_parserfun : (MethodInfo * Expr) -> _ = fun (info,expr) ->
   let name = info.Name
@@ -53,18 +59,23 @@ let opens =
 
 let () =
   let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
-  let rules = List.filter_map (fun x -> x) rules  
+  let rules = List.filter_map (fun x -> x) rules
+  let expander = new Yard.Core.Convertions.ExpandBrackets.ExpandBrackets ()
+  let rules = expander.ConvertList rules
   let headtext = sprintf "\nopen %s\n" (String.concat "\nopen " opens)
-                     
   let definition = ILHelper.makeDefinition rules "filename" (Some headtext)
   Printf.printfn "\nGrammar is:"
-  let () = 
-    Yard.Generators.YardPrinter.Generator.generate definition 
-    |> (fun s ->
-          Printf.printfn "%s" s
-          System.IO.File.WriteAllLines("gr.yrd", [s])
-       )
-  FsYacc.print "asdf.fsy" "Test2.token" definition
+  let () = Yard.Generators.YardPrinter.Generator.generate definition 
+            |> (fun s ->
+                  Printf.printfn "%s" s
+                  System.IO.File.WriteAllLines("gr.yrd", [s])
+               )
+  let tokenTyper (tname:string) =
+    let f (methName,tokenType) = tname.Equals(methName)
+    match Array.find_opt f lexerHelperMethods with
+    | Some (_,x) -> x
+    | None  -> failwith (sprintf "Token type is not specified for token %s" tname)
+  FsYacc.print "asdf.fsy" tokenTyper definition
   ()
 
 let () =

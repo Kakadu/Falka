@@ -1,12 +1,18 @@
 ﻿module Falka.Attributes
+open Falka.Utils
 
 type parserStrategy = GLR | LALR | RecDes
 
-type ParserClassAttribute (start: string, tokentype:System.Type, tokens: string) =
+type ParserClassAttribute (start: string, tokenstype:System.Type, tokens: string) =
     inherit System.Attribute()
     member this.StartRuleName = start
     member this.Tokens = tokens.Split [| ',' |]
-    member this.TokenType = tokentype
+    member this.TokensType = tokenstype
+
+type LexerCombinatorAttribute(tokenName: string, tokenType: string) =
+    inherit System.Attribute()
+    member this.TokenName = tokenName
+    member this.TokenType = tokenType
 
 type ParserFunctionAttribute () =
     inherit System.Attribute()
@@ -20,25 +26,24 @@ type LALRAttribute () =
 type RecDesAttribute () = 
     inherit ParserFunctionAttribute()
 
-let isParserFunction (mem: System.Reflection.MemberInfo) = 
+let isParserFunction (mem: System.Reflection.MemberInfo) =
   let attrs = mem.GetCustomAttributes false
-  attrs |> Array.fold (fun acc x -> 
-    acc || 
+  attrs |> Array.fold (fun acc x ->
+    acc ||
     (match x with
     | :? ParserFunctionAttribute -> true
     | _        -> false)
   ) false
 
-(*  attrs |> Array.fold (fun acc x -> 
+let isLexerCombinatorFunction (mem: System.Reflection.MemberInfo) = 
+  let attrs = mem.GetCustomAttributes false
+  attrs |> Array.fold (fun acc x -> 
     match (acc,x) with
     | (Some _,_) -> acc
-    | (_,(:? RecDesAttribute)) -> Some (RecDes)
-    | (_,(:? LALRAttribute)) -> Some (LALR)
-    | (_,(:? GLRAttribute)) -> Some (GLR)
-    | _ -> None
-    ) None
-*)
-open Falka.Utils
+    | (None, :? LexerCombinatorAttribute) -> Some (x :?> LexerCombinatorAttribute)
+    | _ -> acc
+  ) None
+
 let isParserClass (mem: System.Reflection.MemberInfo) =
   if not mem.ReflectedType.IsClass
   then None

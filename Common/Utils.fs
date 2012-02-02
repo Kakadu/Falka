@@ -8,11 +8,12 @@ module List =
       |> List.map    (function Some x -> x | None -> failwith "false") 
 
 module Array =
-  let find_opt cond xs =
-    Array.fold
-      (function
-      | Some x -> (fun _ -> Some x)
-      | None -> (fun x -> if cond x then Some x else None)) xs
+  let find_opt cond xs : 'a option =
+    xs |> Array.fold (fun acc x ->
+      match acc with
+      | Some x -> acc
+      | None -> if cond x then Some x else None) None
+
   let filter_map f xs =
       xs
       |> Array.map f
