@@ -72,13 +72,14 @@ type InnerParser () = class
   member this.Operator stream : Result<token, token> = 
     (stream?operator : unit -> Result<token,token>) ()
 
+  abstract member Twonumbers: ITokenLexer<token> -> Result<token,token>
   [<ParserFunction>]
   [<ReflectedDefinition>]  
-  member this.Twonumbers stream =
+  default this.Twonumbers stream =
     let body = this.Number >>. this.Number
     wrap_meth stream body
-  
-  abstract member Expression: Parser<token,ast>
+
+  abstract member Expression: ITokenLexer<token> -> Result<ast,token>
   [<ParserFunction>]
   [<ReflectedDefinition>]  
   default this.Expression stream =

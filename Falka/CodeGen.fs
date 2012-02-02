@@ -11,7 +11,7 @@ let tempFileName = @"Tushie.fs"
 let newModule = @"GeneratedParser.Parser"
 
 let referencedAssemblies = 
-  ["System.dll"; "FSharp.PowerPack.dll"; "FalkaCommon.dll"
+  ["System.dll"; "System.Numerics.dll"; "FSharp.PowerPack.dll"; "FalkaCommon.dll"
   ;"FParsec.dll"; "FParsecCS.dll"
   ;@"C:\Program Files\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0\FSharp.Core.dll"
   ;@"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
@@ -29,14 +29,14 @@ let getSource (nsname,classname) startRule killedRules =
   fprintfn h "  override this.%s (stream: ITokenLexer<_>) =" startRule
   fprintfn h "    let lexbuf = ref (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")"
   fprintfn h "    let curstream = ref stream"
-  fprintfn h "    let tokenizer lexbuf ="
+  fprintfn h "    let tokenizer (lexbuf: LexBuffer<_>) ="
   fprintfn h "      if (!curstream).is_empty ()"
   fprintfn h "      then failwith \"fuck\""
   fprintfn h "      else"
   fprintfn h "        let ans = (!curstream).peek ()"
   fprintfn h "        curstream := (!curstream).tail ()"
-  fprintfn h "        lexbuf.StartPos <- new Lexing.Position(\"%s\",0,0,0)" "filename" 
-  fprintfn h "        lexbuf.EndPos <- new Lexing.Position(\"%s\",0,0,String.length ans?Item)" "filename"
+  fprintfn h "        lexbuf.StartPos <- Position.FirstLine(\"%s\")" "filename" 
+  fprintfn h "        lexbuf.EndPos <- new Position(\"%s\",0,0,String.length ans?Item)" "filename"
   fprintfn h "        ans"
   fprintfn h "    let res = GeneratedParser.Yacc.%s tokenizer lexbuf" startRule
   fprintfn h "    Success (res, !curstream)\n"
