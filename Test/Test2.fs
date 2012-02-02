@@ -78,9 +78,10 @@ type InnerParser () = class
     let body = this.Number >>. this.Number
     wrap_meth stream body
   
+  abstract member Expression: Parser<token,ast>
   [<ParserFunction>]
   [<ReflectedDefinition>]  
-  member this.Expression stream =
+  default this.Expression stream =
     let body = 
         (pipe3 this.Number this.Operator this.Expression (fun a b c -> 
           match (a,b) with
