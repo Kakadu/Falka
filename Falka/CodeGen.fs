@@ -1,5 +1,6 @@
 ﻿module CodeGen
 open Printf
+open System
 open System.IO
 open Microsoft.FSharp.Compiler.CodeDom
 open System.CodeDom.Compiler
@@ -8,16 +9,38 @@ open System.Reflection
 let outAssembly = @"Tushie.dll"
 let tempFileName = @"Tushie.fs"
 let newModule = @"GeneratedParser.Parser"
+
 let referencedAssemblies = 
   ["System.dll"; "FSharp.PowerPack.dll"; "FalkaCommon.dll"
   ;"FParsec.dll"; "FParsecCS.dll"
   ;@"C:\Program Files\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0\FSharp.Core.dll"
   ;@"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
 
-let getSource (initialDllName,nsname,classname) =
+let getSource (nsname,classname) startRule killedRules =
+  printfn "Generating Source: startRule=%s, killed rules = %A" startRule killedRules
   let h = new StreamWriter (tempFileName)
-  fprintf h "module %s\n" newModule
-  fprintf h "type InnerParser () = class\n  member this.ololo = 1\nend\n"
+  fprintfn h "module %s" newModule
+  fprintfn h "open Microsoft.FSharp.Text.Lexing"
+  fprintfn h "open Falka.Comb"
+  fprintfn h "open Microsoft.FSharp.Compiler.Reflection"
+  fprintfn h ""
+  fprintfn h "type InnerParser () = class"
+  fprintfn h "  inherit %s.%s ()" nsname classname
+  fprintfn h "  override this.%s (stream: ITokenLexer<_>) =" startRule
+  fprintfn h "    let lexbuf = ref (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")"
+  fprintfn h "    let curstream = ref stream"
+  fprintfn h "    let tokenizer lexbuf ="
+  fprintfn h "      if (!curstream).is_empty ()"
+  fprintfn h "      then failwith \"fuck\""
+  fprintfn h "      else"
+  fprintfn h "        let ans = (!curstream).peek ()"
+  fprintfn h "        curstream := (!curstream).tail ()"
+  fprintfn h "        lexbuf.StartPos <- new Lexing.Position(\"%s\",0,0,0)" "filename" 
+  fprintfn h "        lexbuf.EndPos <- new Lexing.Position(\"%s\",0,0,String.length ans?Item)" "filename"
+  fprintfn h "        ans"
+  fprintfn h "    let res = GeneratedParser.Yacc.%s tokenizer lexbuf" startRule
+  fprintfn h "    Success (res, !curstream)\n"
+  fprintfn h "end"
   h.Close ()
 
 let compile ((dllname,nsname,classname) as classinfo) (srcFiles: string list) =
@@ -27,8 +50,7 @@ let compile ((dllname,nsname,classname) as classinfo) (srcFiles: string list) =
   List.iter (fun x -> ignore (cparams.ReferencedAssemblies.Add x)) (referencedAssemblies @ [dllname])
   cparams.GenerateExecutable <- false
   let fsProvider = new FSharpCodeProvider ()
-  getSource classinfo
-  let filenames = (tempFileName :: srcFiles) |> List.toArray
+  let filenames = srcFiles |> List.toArray
   printfn "Executing F# compiler"
   let res = fsProvider.CompileAssemblyFromFile (cparams, filenames)  
   if res.Errors.Count > 0

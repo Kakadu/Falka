@@ -50,6 +50,7 @@ let opens =
       ; "Microsoft.FSharp.Compiler"
       ; "Microsoft.FSharp.Compiler.Reflection"
     ] |> seq
+
 let () =
   let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
   let rules = List.filter_map (fun x -> x) rules  
@@ -79,7 +80,10 @@ let evalNewAssembly (asm: Assembly) =
 let () =
   if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
   then
-    match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"] with
+    let rules2kill = []
+    //TODO: rules to kill are such rules which are used inside of startRule
+    CodeGen.getSource (nsname,classname) startRuleName rules2kill
+    match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with
     | Some x when x <> null -> evalNewAssembly x
     | _ -> printfn "Failed to compile new class"
   else

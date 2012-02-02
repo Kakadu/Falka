@@ -5,8 +5,8 @@ type ITokenLexer<'token> =
   abstract member peek : unit -> 'token
   abstract member tail : unit -> ITokenLexer<'token>
 
-type Result<'a,'token> = 
-  | Success of 'a * ITokenLexer<'token>
+type Result<'result,'token> =
+  | Success of 'result * ITokenLexer<'token>
   | Failed of string
 
 type Parser<'token, 'Result> = ITokenLexer<'token> -> Result<'Result, 'token>
