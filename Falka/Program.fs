@@ -76,7 +76,6 @@ let () =
     | Some (_,x) -> x
     | None  -> failwith (sprintf "Token type is not specified for token %s" tname)
   FsYacc.print "asdf.fsy" tokenTyper definition
-  ()
 
 let () =
   System.IO.File.WriteAllLines(@"log.txt", !loglines)
@@ -91,6 +90,7 @@ let evalNewAssembly (asm: Assembly) =
 let () =
   if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
   then
+    FsYacc.fixFsYaccOutput "asdf" nsname
     let rules2kill = []
     //TODO: rules to kill are such rules which are used inside of startRule
     CodeGen.getSource (nsname,classname) startRuleName rules2kill

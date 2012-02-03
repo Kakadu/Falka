@@ -1,10 +1,32 @@
 ﻿module Falka.FsYacc
 open Yard.Generators.FsYaccPrinter
 open Printf
+open System.IO
 
-let print filename tokentype gr =
-  let s = Yard.Generators.FsYaccPrinter.Generator.generate2 gr tokentype
-  System.IO.File.WriteAllLines(filename, [s])
+let fixFsYaccOutput filenamePrefix nsName =
+  let func filename =
+    let lines = File.ReadAllLines filename
+    let stream = new System.IO.StreamWriter (filename)
+    let tokenStart = lines |> Array.tryFindIndex (fun s -> s.StartsWith "type token")
+    let tokenEnd = lines |> Array.tryFindIndex (fun s -> s.StartsWith "type tokenId")
+    match tokenStart,tokenEnd with
+      | (Some x,Some y) when x < y ->
+           let f i (s: string) =
+               match i with
+               | _ when i=x -> stream.WriteLine (sprintf "open %s" nsName)
+               | _ when i>x && i<y ->
+                  //printfn "line  `%s` was skipped" s
+                  ()
+               | _ -> stream.WriteLine s
+           Array.iteri f lines
+           stream.Close ()
+      | _ -> failwith "Failed to substitute right token type"          
+  func (filenamePrefix + ".fs")
+  func (filenamePrefix + ".fsi")
+
+let print (filename: string) tokenType gr =
+  let s = Yard.Generators.FsYaccPrinter.Generator.generate2 gr tokenType
+  File.WriteAllLines(filename, [s])
 
 open System.Diagnostics
 let fsyacccmd = @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"

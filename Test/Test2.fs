@@ -7,8 +7,8 @@
 // этого стрима токенов.
 (* Начнем с парсинга арифметики. *) 
 type token =
-  | TNumber of float
-  | TOperator of string
+  | Number of float
+  | Operator of string
 type ast =
   | ANumber of float
   | AExpr of string * ast * ast
@@ -16,9 +16,9 @@ type ast =
 open FParsec
 
 type innerTokenizer () = class
-  member this.number = pfloat |>> (fun x -> TNumber x)
+  member this.number = pfloat |>> (fun x -> Number x)
   member this.operator = 
-    let f x = TOperator ((string)x)
+    let f x : token = token.Operator ((string)x)
     (pchar '+' <|> pchar '-' <|> pchar '*' <|> pchar '/') |>> f
   member this.run  : Parser<_,unit> = many (this.operator <|> this.number)
 end
@@ -35,9 +35,7 @@ type innerLexer (lst : token list) = class
     if o.is_empty () 
     then Failed "input is empty"
     else match o.peek () with
-         | TNumber x ->
-             let temp = o.tail ()
-             Success (x, temp)
+         | Number x -> Success (x, o.tail ())
          | _ -> Failed "cant parse number"
 
   member this.operator () : Result<string, token> =
@@ -45,9 +43,7 @@ type innerLexer (lst : token list) = class
     if o.is_empty ()
     then Failed "input is empty"
     else match o.peek () with
-         | TOperator p ->
-             let temp = o.tail ()
-             Success (p, temp)
+         | Operator p -> Success (p, o.tail ())
          | _ -> Failed "cant parse operator"
   override this.ToString () = lst.ToString ()
 end
