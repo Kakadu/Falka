@@ -7,12 +7,13 @@ open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Reflection
 
 %}
+%token <string> EOF
 %token <string> Operator
 %token <float> Number
 
-%start Expression
+%start Start
 
-%type <'a> Expression
+%type <'a> Start
 
 %%
 
@@ -21,6 +22,8 @@ Twonumbers :  yard_exp_brackets_1 { let aaa=$1  in (fun s -> ANumber(s)) aaa}
 Expression :  Number Operator Expression
                { let aac=$1  in let aad=$2  in let aae=$3  in (fun a op c -> AExpr(op, ANumber(a), c)) aac aad aae}
              | Number { let aaf=$1  in (fun x -> ANumber(x)) aaf}
+
+Start :  Expression EOF { let aag=$1  in aag}
 
 yard_exp_brackets_1 :  Number Number { let aab=$2  in aab}
 

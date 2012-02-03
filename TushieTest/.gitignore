@@ -1,5 +1,6 @@
 *.dll
 *.pdb
-Falka.exe
+*.exe
 *.xml
 log.txt
+*.yrd

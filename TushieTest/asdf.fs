@@ -19,13 +19,15 @@ open Test2
 type tokenId = 
     | TOKEN_Number
     | TOKEN_Operator
+    | TOKEN_EOF
     | TOKEN_end_of_input
     | TOKEN_error
 // This type is used to give symbolic names to token indexes, useful for error messages
 type nonTerminalId = 
-    | NONTERM__startExpression
+    | NONTERM__startStart
     | NONTERM_Twonumbers
     | NONTERM_Expression
+    | NONTERM_Start
     | NONTERM_yard_exp_brackets_1
 
 // This function maps tokens to integers indexes
@@ -33,52 +35,57 @@ let tagOfToken (t:token) =
   match t with
   | Number _ -> 0 
   | Operator _ -> 1 
+  | EOF _ -> 2 
 
 // This function maps integers indexes to symbolic token ids
 let tokenTagToTokenId (tokenIdx:int) = 
   match tokenIdx with
   | 0 -> TOKEN_Number 
   | 1 -> TOKEN_Operator 
-  | 4 -> TOKEN_end_of_input
-  | 2 -> TOKEN_error
+  | 2 -> TOKEN_EOF 
+  | 5 -> TOKEN_end_of_input
+  | 3 -> TOKEN_error
   | _ -> failwith "tokenTagToTokenId: bad token"
 
 /// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production
 let prodIdxToNonTerminal (prodIdx:int) = 
   match prodIdx with
-    | 0 -> NONTERM__startExpression 
+    | 0 -> NONTERM__startStart 
     | 1 -> NONTERM_Twonumbers 
     | 2 -> NONTERM_Expression 
     | 3 -> NONTERM_Expression 
-    | 4 -> NONTERM_yard_exp_brackets_1 
+    | 4 -> NONTERM_Start 
+    | 5 -> NONTERM_yard_exp_brackets_1 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
-let _fsyacc_endOfInputTag = 4 
-let _fsyacc_tagOfErrorTerminal = 2
+let _fsyacc_endOfInputTag = 5 
+let _fsyacc_tagOfErrorTerminal = 3
 
 // This function gets the name of a token as a string
 let token_to_string (t:token) = 
   match t with 
   | Number _ -> "Number" 
   | Operator _ -> "Operator" 
+  | EOF _ -> "EOF" 
 
 // This function gets the data carried by a token as an object
 let _fsyacc_dataOfToken (t:token) = 
   match t with 
   | Number _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | Operator _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-let _fsyacc_gotos = [| 0us; 65535us; 0us; 65535us; 2us; 65535us; 0us; 1us; 3us; 4us; 0us; 65535us; |]
-let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 2us; 5us; |]
-let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 2us; 2us; 3us; 1us; 2us; 1us; 2us; |]
-let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 7us; 9us; |]
-let _fsyacc_action_rows = 5
-let _fsyacc_actionTableElements = [|1us; 32768us; 0us; 2us; 0us; 49152us; 1us; 16387us; 1us; 3us; 1us; 32768us; 0us; 2us; 0us; 16386us; |]
-let _fsyacc_actionTableRowOffsets = [|0us; 2us; 3us; 5us; 7us; |]
-let _fsyacc_reductionSymbolCounts = [|1us; 1us; 3us; 1us; 2us; |]
-let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 2us; 3us; |]
-let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 65535us; 16386us; |]
+  | EOF _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+let _fsyacc_gotos = [| 0us; 65535us; 0us; 65535us; 2us; 65535us; 0us; 5us; 3us; 4us; 1us; 65535us; 0us; 1us; 0us; 65535us; |]
+let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 2us; 5us; 7us; |]
+let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 2us; 2us; 3us; 1us; 2us; 1us; 2us; 1us; 4us; 1us; 4us; |]
+let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 7us; 9us; 11us; 13us; |]
+let _fsyacc_action_rows = 7
+let _fsyacc_actionTableElements = [|1us; 32768us; 0us; 2us; 0us; 49152us; 1us; 16387us; 1us; 3us; 1us; 32768us; 0us; 2us; 0us; 16386us; 1us; 32768us; 2us; 6us; 0us; 16388us; |]
+let _fsyacc_actionTableRowOffsets = [|0us; 2us; 3us; 5us; 7us; 8us; 10us; |]
+let _fsyacc_reductionSymbolCounts = [|1us; 1us; 3us; 1us; 2us; 2us; |]
+let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 2us; 3us; 4us; |]
+let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 65535us; 16386us; 65535us; 16388us; |]
 let _fsyacc_reductions ()  =    [| 
-# 84 "asdf.fs"
+# 92 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'a)) in
             Microsoft.FSharp.Core.Operators.box
@@ -86,56 +93,68 @@ let _fsyacc_reductions ()  =    [|
                    (
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
-                 : '_startExpression));
-# 93 "asdf.fs"
+                 : '_startStart));
+# 101 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'yard_exp_brackets_1)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 19 "asdf.fsy"
+# 20 "asdf.fsy"
                                                          let aaa=_1  in (fun s -> ANumber(s)) aaa
                    )
-# 19 "asdf.fsy"
+# 20 "asdf.fsy"
                  : 'Twonumbers));
-# 104 "asdf.fs"
+# 112 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : float)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
-            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'a)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 22 "asdf.fsy"
+# 23 "asdf.fsy"
                                       let aac=_1  in let aad=_2  in let aae=_3  in (fun a op c -> AExpr(op, ANumber(a), c)) aac aad aae
                    )
-# 22 "asdf.fsy"
-                 : 'a));
-# 117 "asdf.fs"
+# 23 "asdf.fsy"
+                 : 'Expression));
+# 125 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : float)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 23 "asdf.fsy"
+# 24 "asdf.fsy"
                                              let aaf=_1  in (fun x -> ANumber(x)) aaf
                    )
-# 23 "asdf.fsy"
+# 24 "asdf.fsy"
+                 : 'Expression));
+# 136 "asdf.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 26 "asdf.fsy"
+                                               printfn "hahah %A" _1; let aag=_1  in aag
+                   )
+# 26 "asdf.fsy"
                  : 'a));
-# 128 "asdf.fs"
+# 148 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : float)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : float)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 25 "asdf.fsy"
+# 28 "asdf.fsy"
                                                             let aab=_2  in aab
                    )
-# 25 "asdf.fsy"
+# 28 "asdf.fsy"
                  : 'yard_exp_brackets_1));
 |]
-# 141 "asdf.fs"
+# 161 "asdf.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
@@ -154,8 +173,8 @@ let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> =
                               match parse_error_rich with 
                               | Some f -> f ctxt
                               | None -> parse_error ctxt.Message);
-    numTerminals = 5;
+    numTerminals = 6;
     productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }
 let engine lexer lexbuf startState = (tables ()).Interpret(lexer, lexbuf, startState)
-let Expression lexer lexbuf : 'a =
+let Start lexer lexbuf : 'a =
     Microsoft.FSharp.Core.Operators.unbox ((tables ()).Interpret(lexer, lexbuf, 0))

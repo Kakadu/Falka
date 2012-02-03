@@ -4,12 +4,14 @@ open Test2
 type tokenId = 
     | TOKEN_Number
     | TOKEN_Operator
+    | TOKEN_EOF
     | TOKEN_end_of_input
     | TOKEN_error
 type nonTerminalId = 
-    | NONTERM__startExpression
+    | NONTERM__startStart
     | NONTERM_Twonumbers
     | NONTERM_Expression
+    | NONTERM_Start
     | NONTERM_yard_exp_brackets_1
 /// This function maps integers indexes to symbolic token ids
 val tagOfToken: token -> int
@@ -22,4 +24,4 @@ val prodIdxToNonTerminal: int -> nonTerminalId
 
 /// This function gets the name of a token as a string
 val token_to_string: token -> string
-val Expression : (Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> token) -> Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> ('a) 
+val Start : (Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> token) -> Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> ('a) 
