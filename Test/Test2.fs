@@ -9,9 +9,12 @@
 type token =
   | Number of float
   | Operator of string
+//  | Lbra of string
+//  | Rbra of string
 type ast =
   | ANumber of float
   | AExpr of string * ast * ast
+
 
 open FParsec
 
@@ -20,7 +23,9 @@ type innerTokenizer () = class
   member this.operator = 
     let f x : token = token.Operator ((string)x)
     (pchar '+' <|> pchar '-' <|> pchar '*' <|> pchar '/') |>> f
-  member this.run  : Parser<_,unit> = many (this.operator <|> this.number)
+//  member this.lbra = pstring "(" |>> (fun s -> Lbra s)
+//  member this.rbra = pstring ")" |>> (fun s -> Rbra s)
+  member this.run  : Parser<_,unit> = (many (this.operator <|> this.number)) 
 end
 
 open Falka.Comb

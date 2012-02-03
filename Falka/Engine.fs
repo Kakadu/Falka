@@ -38,7 +38,13 @@ let eval startRuleName (tokenRuleNames: string []) (meth: MethodInfo,expr: Expr)
         begin
             match mi with
             | DotGrGr ->  // .>>
-                failwith "generation for .>> is not implemented yet"
+                if List.length args <> 2 then error' ".>> should have 2 parameters"
+                let (l,r) = List.head args, List.nth args 1
+                let (l,r) = inner l, inner r
+                let right_bind = nextIdent () |> ILHelper.make_Sourcet |> (fun x -> Some x)
+                let (l,r) = (ILHelper.makeElem right_bind l false None
+                            ,ILHelper.makeElem None r false None)
+                Production.PSeq ([l;r], right_bind)
             | GrGrDot ->  // >>.
                 if List.length args <> 2 then error' ">>. should have 2 parameters"
                 let (l,r) = List.head args, List.nth args 1

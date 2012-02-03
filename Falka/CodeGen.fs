@@ -33,9 +33,11 @@ let getSource (nsname,classname) startRule killedRules =
   fprintfn h "      then failwith \"fuck\""
   fprintfn h "      else"
   fprintfn h "        let ans = (!curstream).peek ()"
+  fprintfn h "        Printf.printfn \"ans = %A\" ans"
   fprintfn h "        curstream := (!curstream).tail ()"
   fprintfn h "        lexbuf.StartPos <- Position.FirstLine(\"%s\")" "filename"
-  fprintfn h "        lexbuf.EndPos <- lexbuf.StartPos.EndOfToken(String.length ans?Item)"
+  //fprintfn h "        lexbuf.EndPos <- lexbuf.StartPos.EndOfToken(String.length ans?Item)"
+  fprintfn h "        lexbuf.EndPos <- lexbuf.StartPos.EndOfToken(1)"
   fprintfn h "        ans"
   fprintfn h "    let res = GeneratedParser.Yacc.%s tokenizer (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")" startRule
   fprintfn h "    Success (res, !curstream)\n"
