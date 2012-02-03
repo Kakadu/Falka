@@ -9,6 +9,7 @@
 type token =
   | Number of float
   | Operator of string
+  | EOF of string
 //  | Lbra of string
 //  | Rbra of string
 type ast =
@@ -19,13 +20,16 @@ type ast =
 open FParsec
 
 type innerTokenizer () = class
+  member this.eof :Parser<token,unit> = 
+    fun _ -> 
+      new Reply<_>(EOF "")
   member this.number = pfloat |>> (fun x -> Number x)
   member this.operator = 
     let f x : token = token.Operator ((string)x)
     (pchar '+' <|> pchar '-' <|> pchar '*' <|> pchar '/') |>> f
 //  member this.lbra = pstring "(" |>> (fun s -> Lbra s)
 //  member this.rbra = pstring ")" |>> (fun s -> Rbra s)
-  member this.run  : Parser<_,unit> = (many (this.operator <|> this.number)) 
+  member this.run  : Parser<_,unit> = (many (this.operator <|> this.number))  .>> this.eof
 end
 
 open Falka.Comb
@@ -50,6 +54,11 @@ type innerLexer (lst : token list) = class
     else match o.peek () with
          | Operator p -> Success (p, o.tail ())
          | _ -> Failed "cant parse operator"
+  member this.eof () : Result<string, token> =
+    let o = this :> ITokenLexer<token>
+    match o.peek () with
+         | EOF p -> Success (p, o)
+         | _ -> Failed "cant parse eof"
   override this.ToString () = lst.ToString ()
 end
 
@@ -66,11 +75,14 @@ let wrap_meth s (f : Parser<_,_>) =
   f s
 
 open Falka.Attributes
-[<ParserClassAttribute("Expression", typeof<token>, "Number,Operator" )>]
+[<ParserClassAttribute("Start", typeof<token>, "Number,Operator,EOF" )>]
 type InnerParser () = class
   [<LexerCombinator("Number","float")>]
   member this.Number stream : Result<float, token> =
     (stream?number : unit -> Result<float,token>) ()
+  [<LexerCombinator("EOF","string")>]
+  member this.EOF stream : Result<string, token> =
+    (stream?eof : unit -> Result<string,token>) ()
   [<LexerCombinator("Operator","string")>]
   member this.Operator stream : Result<string, token> =
     (stream?operator : unit -> Result<string,token>) ()
@@ -91,4 +103,12 @@ type InnerParser () = class
         <|> (this.Number |>> (fun x -> ANumber x) )
     wrap_meth stream body
   
+  abstract member Start: ITokenLexer<token> -> Result<ast,token>
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  default this.Start stream =
+    let body = 
+        this.Expression .>> this.EOF
+    wrap_meth stream body
+
 end

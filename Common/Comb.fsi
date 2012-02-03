@@ -12,6 +12,7 @@ type Result<'result,'token> =
 type Parser<'token, 'Result> = ITokenLexer<'token> -> Result<'Result, 'token>
 
 val (>>.): Parser<'t,'r> -> Parser<'t,'q> -> Parser<'t,'q>
+val (.>>): Parser<'t,'r> -> Parser<'t,'q> -> Parser<'t,'r>
 val (.>>.): Parser<'t,'r> -> Parser<'t,'u> -> Parser<'t,'r*'u>
 val (|>>): Parser<'t,'r> -> ('r -> 'b) -> Parser<'t,'b>
 val (<|>): Parser<'t,'u> -> Parser<'t,'u> -> Parser<'t,'u>

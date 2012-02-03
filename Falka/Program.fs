@@ -62,6 +62,8 @@ let () =
   let rules = List.filter_map (fun x -> x) rules
   let expander = new Yard.Core.Convertions.ExpandBrackets.ExpandBrackets ()
   let rules = expander.ConvertList rules
+  (*let eofer = new Yard.Core.Convertions.AddEOF.AddEOF ()
+  let rules = eofer.ConvertList rules *)
   let headtext = sprintf "\nopen %s\n" (String.concat "\nopen " opens)
   let definition = ILHelper.makeDefinition rules "filename" (Some headtext)
   Printf.printfn "\nGrammar is:"

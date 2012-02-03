@@ -16,6 +16,14 @@ let (>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'q>) : Parser<'t,'q> = fun lst ->
   | Success (_, tail) -> p2 tail
   | Failed s -> Failed s
   
+let (.>>) (p1: Parser<'t,'r>) (p2: Parser<'t,'q>) : Parser<'t,'r> = fun lst ->
+  match p1 lst with
+  | Success (x, tail) -> 
+     match p2 tail with
+     | Success (_,tail) -> Success (x,tail)
+     | Failed s -> Failed s
+  | Failed s -> Failed s
+  
 let (.>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'u>) : Parser<'t,'r*'u> = fun lst ->
   match p1 lst with
   | Success (ans1, tail) -> 
