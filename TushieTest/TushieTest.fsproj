@@ -40,7 +40,6 @@
     <Compile Include="asdf.fs" />
     <Compile Include="Tushie.fs" />
     <Compile Include="Program.fs" />
-    <None Include="gr.yrd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\FalkaCommon.fsproj">

@@ -36,8 +36,6 @@
   <ItemGroup>
     <Compile Include="Test.fs" />
     <Compile Include="Test2.fs" />
-    <None Include="lll.fsl" />
-    <Compile Include="lll.fs" />
     <Compile Include="Test3.fs" />
   </ItemGroup>
   <ItemGroup>

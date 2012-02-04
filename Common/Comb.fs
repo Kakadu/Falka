@@ -18,12 +18,17 @@ let (>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'q>) : Parser<'t,'q> = fun lst ->
   
 let (.>>) (p1: Parser<'t,'r>) (p2: Parser<'t,'q>) : Parser<'t,'r> = fun lst ->
   match p1 lst with
-  | Success (x, tail) -> 
+  | Success (x, tail) ->
      match p2 tail with
      | Success (_,tail) -> Success (x,tail)
      | Failed s -> Failed s
   | Failed s -> Failed s
-  
+
+let opt (p: Parser<'t,'r>) : Parser<'t, 'r option> = fun lst ->
+  match p lst with
+  | Success(ans,tail) -> Success (Some ans,tail)
+  | Failed _          -> Success (None,lst)
+
 let (.>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'u>) : Parser<'t,'r*'u> = fun lst ->
   match p1 lst with
   | Success (ans1, tail) -> 

@@ -9,7 +9,7 @@ open Microsoft.FSharp.Quotations
 let (dllname, nsname, classname) = 
   //(@"Test.dll", @"Test", @"parser1")
   (@"Test.dll", @"Test2", @"InnerParser")
-
+let doescompile = false
 let (innerParser: System.Type, startRuleName, tokenType, tokenRuleNames) =
   let dll = Assembly.LoadFrom dllname
   let rootns = dll.GetType nsname
@@ -96,9 +96,12 @@ let () =
     let rules2kill = []
     //TODO: rules to kill are such rules which are used inside of startRule
     CodeGen.getSource (nsname,classname) startRuleName rules2kill
-    match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with
-    | Some x when x <> null -> evalNewAssembly x
-    | _ -> printfn "Failed to compile new class"
+    if doescompile
+    then
+      match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with
+      | Some x when x <> null -> evalNewAssembly x
+      | _ -> printfn "Failed to compile new class"
+    else ()
   else
     printfn "Error while executing FsYacc"
 
