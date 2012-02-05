@@ -58,6 +58,7 @@ module Codegen =
     let ucis : _ [] =
       FSharpType.GetUnionCases(typeof<Test3.Lexer.token>) |> Array.map nameToUnionCtor
     using (new StreamWriter ("qwe.fs")) (fun h ->
+     using (new StreamWriter ("qwe2.fs")) (fun h2 ->
       ucis |> Array.iter (fun (initName, typ) ->
         let typeStr = match typ with
                       | Some "System.String" -> "string"
@@ -72,7 +73,14 @@ module Codegen =
         fprintfn h "         | %s x -> Success (x, o.tail())" initName
         fprintfn h "         | _    -> Failed \"cant parse %s\"" initName
         fprintfn h ""
+        let combName = initName.ToLower () |> (fun (s:string) ->
+          s.ToCharArray () |> (fun (arr: _ []) -> arr.[0] <- Char.ToUpper arr.[0]; new String(arr) )
+        )
+        fprintfn h2 "  [<LexerCombinator(\"%s\",\"%s\")>]" initName tokenTypeName
+        fprintfn h2 "  member this.%s stream : Result<%s, token> =" combName typeStr
+        fprintfn h2 "    (stream?operator : unit -> Result<%s,token>) ()" typeStr
       )
+     )
     )
  
-//let _ = Codegen.codegen3 "Lexer.token"
+let _ = Codegen.codegen3 "Lexer.token"

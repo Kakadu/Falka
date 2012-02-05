@@ -39,6 +39,7 @@
     <None Include="Lexer.fsl" />
     <Compile Include="Lexer.fs" />
     <Compile Include="Test3.fs" />
+    <Compile Include="trash.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">

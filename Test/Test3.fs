@@ -194,41 +194,103 @@ type innerLexer (lst : token list) =
          | SEMI x -> Success (x, o.tail())
          | _    -> Failed "cant parse SEMI"
 
-(*
-open Test
-open Microsoft.FSharp.Compiler.Reflection
-
-
-let wrap_rec p = 
-  let _expr, exprImpl = createParserForwardedToRef()
-  exprImpl.Value <- p _expr
-  _expr
-*)
 open Falka.Comb
 open Falka.Attributes
+open Microsoft.FSharp.Compiler.Reflection
 
-let wrap_meth s (f : Parser<_,_>) =
-  f s
-(*
+let wrap_meth s (f : Parser<_,_>) = f s
+
+module Ast = 
+  type aBinOp = OpPlus | OpMinus
+  type asqlexpr = 
+    | SqlValue of asqlvalue
+    | LocalVar of string
+    | GlobalVar of string
+    | Ident of string
+    | Select of asqlexpr * asqlexpr
+    | BinOp of aBinOp * asqlexpr * asqlexpr
+  and asqlvalue = 
+    | DecNumber of int
+    | StringConst of string
+
 [<ParserClassAttribute("Start", typeof<token>, "Number,Operator,EOF" )>]
-type InnerParser () = class
-  [<LexerCombinator("Number","float")>]
-  member this.Number stream : Result<float, token> =
-    (stream?number : unit -> Result<float,token>) ()
-  [<LexerCombinator("EOF","string")>]
-  member this.EOF stream : Result<string, token> =
-    (stream?eof : unit -> Result<string,token>) ()
-  [<LexerCombinator("Operator","string")>]
-  member this.Operator stream : Result<string, token> =
+type InnerParser () = 
+  [<LexerCombinator("EOF","Lexer.token")>]
+  member this.Eof stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("KW_SELECT","Lexer.token")>]
+  member this.Kw_select stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("KW_FROM","Lexer.token")>]
+  member this.Kw_from stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("KW_BEGIN","Lexer.token")>]
+  member this.Kw_begin stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("KW_END","Lexer.token")>]
+  member this.Kw_end stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("STRING_CONST","Lexer.token")>]
+  member this.String_const stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("DEC_NUMBER","Lexer.token")>]
+  member this.Dec_number stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("IDENT","Lexer.token")>]
+  member this.Ident stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("GLOBALVAR","Lexer.token")>]
+  member this.Globalvar stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("GLOBALTEMPOBJ","Lexer.token")>]
+  member this.Globaltempobj stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("LOCALVAR","Lexer.token")>]
+  member this.Localvar stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("TEMPOBJ","Lexer.token")>]
+  member this.Tempobj stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("DOT","Lexer.token")>]
+  member this.Dot stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("COMMA","Lexer.token")>]
+  member this.Comma stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("OP_PLUS","Lexer.token")>]
+  member this.Op_plus stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("OP_EQ","Lexer.token")>]
+  member this.Op_eq stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("OP_MINUS","Lexer.token")>]
+  member this.Op_minus stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("OP_DIV","Lexer.token")>]
+  member this.Op_div stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("LPAREN","Lexer.token")>]
+  member this.Lparen stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("RPAREN","Lexer.token")>]
+  member this.Rparen stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("LBRACKET","Lexer.token")>]
+  member this.Lbracket stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("RBRACKET","Lexer.token")>]
+  member this.Rbracket stream : Result<string, token> =
+    (stream?operator : unit -> Result<string,token>) ()
+  [<LexerCombinator("SEMI","Lexer.token")>]
+  member this.Semi stream : Result<string, token> =
     (stream?operator : unit -> Result<string,token>) ()
 
+(*
   abstract member Twonumbers: ITokenLexer<token> -> Result<ast,token>
   [<ParserFunction>]
   [<ReflectedDefinition>]  
   default this.Twonumbers stream =
     let body = this.Number >>. this.Number |>> (fun s -> ANumber s)
     wrap_meth stream body
-
-
-end
 *)
+
