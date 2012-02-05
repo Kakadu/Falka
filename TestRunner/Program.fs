@@ -27,13 +27,52 @@ let test2 () =
     | Failed s -> printfn "Parsing failed: %s\n" s
   ()
 
+open Test3
 let test3 () =
   let tokens =
-    run_fparsec Test3.Tokenizer.start "select a from b" (fun (x,_,_) -> x) 
-                (fun (msg,_,_) -> 
-                  printfn "Failed tokenization. %s" msg
-                  failwith msg)
-  let tokens = tokens @ [Test3.EOF ""]
-  printfn "tokens = %A" tokens
-
+    let lexbuf = Lexing.LexBuffer<_>.FromString "select a from b"
+    let rec getTokens () =
+      seq {
+        match Lexer.tokens lexbuf with
+        | Lexer.EOF _ as ans -> yield ans
+        | ans ->
+            yield ans
+            yield! getTokens ()
+      }
+    getTokens ()
+  ()
+  //let tokens = Seq.toList tokens
+  //printfn "tokens = %A" tokens
 let () = test3 ()
+
+
+module Codegen =
+  open Microsoft.FSharp.Reflection
+  open System.Reflection
+  open System.IO
+
+  let codegen3 tokenTypeName =
+    let nameToUnionCtor (uci:UnionCaseInfo) =
+      let fields: PropertyInfo [] = uci.GetFields ()
+      (uci.Name, if fields.Length > 0 then Some (fields.[0].PropertyType.FullName) else None)
+    let ucis : _ [] =
+      FSharpType.GetUnionCases(typeof<Test3.Lexer.token>) |> Array.map nameToUnionCtor
+    using (new StreamWriter ("qwe.fs")) (fun h ->
+      ucis |> Array.iter (fun (initName, typ) ->
+        let typeStr = match typ with
+                      | Some "System.String" -> "string"
+                      | Some x-> x
+                      | None -> "unit"
+        let name = initName.ToLower ()
+        fprintfn h "  member this.%s : Result<%s,%s> =" name typeStr tokenTypeName
+        fprintfn h "    let o = this :> ITokenLexer<%s>" tokenTypeName
+        fprintfn h "    if o.is_empty ()"
+        fprintfn h "    then Failed \"input is empty\""
+        fprintfn h "    else match o.peek ()  with"
+        fprintfn h "         | %s x -> Success (x, o.tail())" initName
+        fprintfn h "         | _    -> Failed \"cant parse %s\"" initName
+        fprintfn h ""
+      )
+    )
+ 
+//let _ = Codegen.codegen3 "Lexer.token"

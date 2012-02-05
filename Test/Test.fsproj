@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="Test.fs" />
     <Compile Include="Test2.fs" />
+    <None Include="Lexer.fsl" />
+    <Compile Include="Lexer.fs" />
     <Compile Include="Test3.fs" />
   </ItemGroup>
   <ItemGroup>

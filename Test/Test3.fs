@@ -1,102 +1,215 @@
-﻿module Test3
+﻿module Test3.Parser
 (* Parser combiantos with tokenization phase *)
 
-type token =
-  | GlobalVar of string // @@asfd
-  | LocalVar  of string // @asdf
-  | Ident     of string // asdf
-  | LParen    of char   // '('
-  | RParen    of char   // ')'
-  | KW_SELECT of string // select
-  | KW_FROM   of string // from
-  | OP_PLUS   of char   // +
-  | OP_MINUS  of char   // -
-  | OP_COMMA  of char   // ,
-  | EOF of string
-
-module Tokenizer =
-  open FParsec
-  open System
-  let first = function
-    | '_' | '@' | '#' -> true
-    | c when Char.IsLetter c  -> true
-    | _ -> false
-  let others = function
-    | '$' -> true
-    | c when Char.IsDigit c -> true
-    | c -> first c
-  let eof:   Parser<token,unit> = fun _ -> new Reply<_>(EOF "")
-  let comma: Parser<token,unit> = pchar ',' |>> (fun c -> OP_COMMA c)
-  let minus: Parser<token,unit> = pchar '-' |>> (fun c -> OP_MINUS c)
-  let plus:  Parser<token,unit> = pchar '+' |>> (fun c -> OP_PLUS c)
-  let from:  Parser<token,unit> = (pstring "from"   .>> spaces) |>> (fun s -> KW_FROM s)
-  let select:Parser<token,unit> = (pstring "select" .>> spaces) |>> (fun s -> KW_SELECT s)
-  let lparen:Parser<token,unit> = pchar '(' |>> (fun s -> LParen s)
-  let rparen:Parser<token,unit> = pchar ')' |>> (fun s -> RParen s)
-  let ident : Parser<token,unit> = 
-    ((manySatisfy2 first others) .>> spaces) |>> (fun c -> Ident c)
-  let globalVar: Parser<token,unit> = 
-    pstring "@@" >>. (manySatisfy2 first others) .>> spaces |>> (fun s-> GlobalVar s)
-  let localVar : Parser<token,unit> = 
-    pstring  "@" >>. (manySatisfy2 first others) .>> spaces |>> (fun s -> LocalVar s)
-  let start: Parser<token list,unit> = 
-    //many (comma <|> minus <|> plus <|> from <|> select <|> lparen <|> rparen <|> ident <|> localVar <|> globalVar)
-    many (select <|> ident)
-(*
-type innerTokenizer () = class
-  member this.eof :Parser<token,unit> = 
-    fun _ -> 
-      new Reply<_>(EOF "")
-  member this.number = pfloat |>> (fun x -> Number x)
-  member this.operator = 
-    let f x : token = token.Operator ((string)x)
-    (pchar '+' <|> pchar '-' <|> pchar '*' <|> pchar '/') |>> f
-  member this.run  : Parser<_,unit> = (many (this.operator <|> this.number))  .>> this.eof
-end
-
+open Test3.Lexer
 open Falka.Comb
-type innerLexer (lst : token list) = class
+type innerLexer (lst : token list) = 
   interface ITokenLexer<token> with
     member this.is_empty () = List.isEmpty lst
     member this.peek () = List.head lst
     member this.tail () = new innerLexer (List.tail lst) :> ITokenLexer<token>
+  override this.ToString () = lst.ToString ()
   (* next members will be invoked via Dynamic *)
-  member this.number () : Result<float, token> =
-    let o = this :> ITokenLexer<token>
-    if o.is_empty () 
-    then Failed "input is empty"
-    else match o.peek () with
-         | Number x -> Success (x, o.tail ())
-         | _ -> Failed "cant parse number"
-
-  member this.operator () : Result<string, token> =
-    let o = this :> ITokenLexer<token>
+  member this.eof : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek () with
-         | Operator p -> Success (p, o.tail ())
-         | _ -> Failed "cant parse operator"
-  member this.eof () : Result<string, token> =
-    let o = this :> ITokenLexer<token>
-    match o.peek () with
-         | EOF p -> Success (p, o)
-         | _ -> Failed "cant parse eof"
-  override this.ToString () = lst.ToString ()
-end
+    else match o.peek ()  with
+         | EOF x -> Success (x, o.tail())
+         | _    -> Failed "cant parse EOF"
 
+  member this.kw_select : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | KW_SELECT x -> Success (x, o.tail())
+         | _    -> Failed "cant parse KW_SELECT"
+
+  member this.kw_from : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | KW_FROM x -> Success (x, o.tail())
+         | _    -> Failed "cant parse KW_FROM"
+
+  member this.kw_begin : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | KW_BEGIN x -> Success (x, o.tail())
+         | _    -> Failed "cant parse KW_BEGIN"
+
+  member this.kw_end : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | KW_END x -> Success (x, o.tail())
+         | _    -> Failed "cant parse KW_END"
+
+  member this.string_const : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | STRING_CONST x -> Success (x, o.tail())
+         | _    -> Failed "cant parse STRING_CONST"
+
+  member this.dec_number : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | DEC_NUMBER x -> Success (x, o.tail())
+         | _    -> Failed "cant parse DEC_NUMBER"
+
+  member this.ident : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | IDENT x -> Success (x, o.tail())
+         | _    -> Failed "cant parse IDENT"
+
+  member this.globalvar : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | GLOBALVAR x -> Success (x, o.tail())
+         | _    -> Failed "cant parse GLOBALVAR"
+
+  member this.globaltempobj : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | GLOBALTEMPOBJ x -> Success (x, o.tail())
+         | _    -> Failed "cant parse GLOBALTEMPOBJ"
+
+  member this.localvar : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | LOCALVAR x -> Success (x, o.tail())
+         | _    -> Failed "cant parse LOCALVAR"
+
+  member this.tempobj : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | TEMPOBJ x -> Success (x, o.tail())
+         | _    -> Failed "cant parse TEMPOBJ"
+
+  member this.dot : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | DOT x -> Success (x, o.tail())
+         | _    -> Failed "cant parse DOT"
+
+  member this.comma : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | COMMA x -> Success (x, o.tail())
+         | _    -> Failed "cant parse COMMA"
+
+  member this.op_plus : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | OP_PLUS x -> Success (x, o.tail())
+         | _    -> Failed "cant parse OP_PLUS"
+
+  member this.op_eq : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | OP_EQ x -> Success (x, o.tail())
+         | _    -> Failed "cant parse OP_EQ"
+
+  member this.op_minus : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | OP_MINUS x -> Success (x, o.tail())
+         | _    -> Failed "cant parse OP_MINUS"
+
+  member this.op_div : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | OP_DIV x -> Success (x, o.tail())
+         | _    -> Failed "cant parse OP_DIV"
+
+  member this.lparen : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | LPAREN x -> Success (x, o.tail())
+         | _    -> Failed "cant parse LPAREN"
+
+  member this.rparen : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | RPAREN x -> Success (x, o.tail())
+         | _    -> Failed "cant parse RPAREN"
+
+  member this.lbracket : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | LBRACKET x -> Success (x, o.tail())
+         | _    -> Failed "cant parse LBRACKET"
+
+  member this.rbracket : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | RBRACKET x -> Success (x, o.tail())
+         | _    -> Failed "cant parse RBRACKET"
+
+  member this.semi : Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else match o.peek ()  with
+         | SEMI x -> Success (x, o.tail())
+         | _    -> Failed "cant parse SEMI"
+
+(*
 open Test
 open Microsoft.FSharp.Compiler.Reflection
-open Falka.Comb
+
 
 let wrap_rec p = 
   let _expr, exprImpl = createParserForwardedToRef()
   exprImpl.Value <- p _expr
   _expr
+*)
+open Falka.Comb
+open Falka.Attributes
 
 let wrap_meth s (f : Parser<_,_>) =
   f s
-
-open Falka.Attributes
+(*
 [<ParserClassAttribute("Start", typeof<token>, "Number,Operator,EOF" )>]
 type InnerParser () = class
   [<LexerCombinator("Number","float")>]
@@ -116,21 +229,6 @@ type InnerParser () = class
     let body = this.Number >>. this.Number |>> (fun s -> ANumber s)
     wrap_meth stream body
 
-  abstract member Expression: ITokenLexer<token> -> Result<ast,token>
-  [<ParserFunction>]
-  [<ReflectedDefinition>]
-  default this.Expression stream =
-    let body = 
-        (pipe3 this.Number this.Operator this.Expression (fun a op c -> AExpr (op, ANumber a,c)))
-        <|> (this.Number |>> (fun x -> ANumber x) )
-    wrap_meth stream body
-  
-  abstract member Start: ITokenLexer<token> -> Result<ast,token>
-  [<ParserFunction>]
-  [<ReflectedDefinition>]
-  default this.Start stream =
-    let body = this.Expression .>> this.EOF
-    wrap_meth stream body
 
 end
 *)
