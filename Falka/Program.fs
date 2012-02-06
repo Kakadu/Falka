@@ -10,13 +10,13 @@ let (dllname, nsname, classname) =
   //(@"Test.dll", @"Test", @"parser1")
   (@"Test.dll", @"Test2", @"InnerParser")
 let doescompile = false
-let (innerParser: System.Type, startRuleName, tokenType, tokenRuleNames) =
+let (innerParser: System.Type, startRuleName, tokenType) =
   let dll = Assembly.LoadFrom dllname
   let rootns = dll.GetType nsname
   let _inn : MemberInfo [] = rootns.GetMember classname
   let parser = _inn.GetValue 0 :?> System.Type
   match isParserClass parser with
-  | Some attr -> (parser, attr.StartRuleName, attr.TokensType, attr.Tokens)
+  | Some attr -> (parser, attr.StartRuleName, attr.TokensType)
   | None -> failwith (sprintf "It seems that %s has no start Rule defined\n" parser.Name)
 
 let methods =
@@ -33,10 +33,18 @@ let methods =
     | Some body -> Some (m,body) 
   )
 
-let lexerHelperMethods =
-  innerParser.GetMethods () |> Array.filter_map (fun mi -> 
-    mi |> isLexerCombinatorFunction |> Option.map (fun x -> (mi,x))
-  ) |> Array.map (fun (mi,attr) -> (mi.Name,attr.TokenType) )
+let getTokeType,isTokenRule =
+  let lst =
+    innerParser.GetMethods () |> Array.filter_map (fun mi ->
+      mi |> isLexerCombinatorFunction |> Option.map (fun x -> (mi,x))
+    )
+  let isTokenRule s =
+    lst |> Array.exists (fun (_,attr:LexerCombinatorAttribute) -> attr.TokenName.Equals(s))
+  let getTokenType s =
+    lst
+    |> Array.find_opt (fun (mi,_) -> mi.Name.Equals(s))
+    |> Option.map (fun (_,attr) -> attr.TokenType)
+  (getTokenType, isTokenRule)
 
 let show_parserfun : (MethodInfo * Expr) -> _ = fun (info,expr) ->
   let name = info.Name
@@ -58,7 +66,7 @@ let opens =
     ] |> seq
 
 let () =
-  let rules = List.map (Engine.eval startRuleName tokenRuleNames) methods
+  let rules = List.map (Engine.eval startRuleName isTokenRule) methods
   let rules = List.filter_map (fun x -> x) rules
   let expander = new Yard.Core.Convertions.ExpandBrackets.ExpandBrackets ()
   let rules = expander.ConvertList rules
@@ -73,9 +81,8 @@ let () =
                   System.IO.File.WriteAllLines("gr.yrd", [s])
                )
   let tokenTyper (tname:string) =
-    let f (methName,tokenType) = tname.Equals(methName)
-    match Array.find_opt f lexerHelperMethods with
-    | Some (_,x) -> x
+    match getTokeType tname with
+    | Some x -> x
     | None  -> failwith (sprintf "Token type is not specified for token %s" tname)
   FsYacc.print "asdf.fsy" tokenTyper definition
 

@@ -293,7 +293,7 @@ module Ast =
   and arootstmnt = 
     | CreateFunction of string * asqlexpr list
 
-[<ParserClassAttribute("Start", typeof<token>, "Number,Operator,EOF" )>]
+[<ParserClassAttribute("Start", typeof<token>)>]
 type InnerParser () = 
   [<LexerCombinator("EOF","Lexer.token")>]
   member this.Eof stream : Result<string, token> =

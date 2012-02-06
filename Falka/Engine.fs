@@ -20,7 +20,7 @@ let decompile f = f |> Unquote.Operators.reduce |> Unquote.Operators.decompile
 let error x = raise (EvalFail x)
 let nextIdent = EngineHelpers.makeIdentFunc ()
 
-let eval startRuleName (tokenRuleNames: string []) (meth: MethodInfo,expr: Expr) =
+let eval startRuleName (isTokenRule: string -> bool) (meth: MethodInfo,expr: Expr) =
   let matcher e = 
     // Maybe to use `OK of 'a | Error of exn` instead of exception to be sure that
     // all exception were catched
@@ -31,7 +31,7 @@ let eval startRuleName (tokenRuleNames: string []) (meth: MethodInfo,expr: Expr)
           // TODO: maybe we should patch FsYaccGenerator to explain generator which 
           // names we should use for tokens and rule names (afair in grammar name 
           // NUMBER is associated with Lexer's T_NUMBER variant.
-          if Array.exists (fun x -> x.Equals mi.Name) tokenRuleNames
+          if isTokenRule mi.Name
           then Production.PToken (ILHelper.make_Sourcet mi.Name)
           else Production.PRef (ILHelper.make_Sourcet mi.Name,None)
       | Call (_,mi,args) -> 

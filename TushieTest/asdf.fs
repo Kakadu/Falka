@@ -137,7 +137,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 26 "asdf.fsy"
-                                               printfn "hahah %A" _1; let aag=_1  in aag
+                                               let aag=_1  in aag
                    )
 # 26 "asdf.fsy"
                  : 'a));

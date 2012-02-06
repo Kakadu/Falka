@@ -18,6 +18,6 @@ let () =
     match ans with
     | Success (ans, tail) ->
         printfn "ans = %A" ans
-        printfn "tail = %A PIZDA" tail
+        printfn "tail = %A" tail
     | Failed s -> printfn "Parsing failed: %s\n" s
 ()

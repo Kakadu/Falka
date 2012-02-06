@@ -3,10 +3,9 @@ open Falka.Utils
 
 type parserStrategy = GLR | LALR | RecDes
 
-type ParserClassAttribute (start: string, tokenstype:System.Type, tokens: string) =
+type ParserClassAttribute (start: string, tokenstype:System.Type) =
     inherit System.Attribute()
     member this.StartRuleName = start
-    member this.Tokens = tokens.Split [| ',' |]
     member this.TokensType = tokenstype
 
 type LexerCombinatorAttribute(tokenName: string, tokenType: string) =

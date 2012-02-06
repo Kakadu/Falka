@@ -68,7 +68,7 @@ let wrap_meth s (f : Parser<_,_>) =
   f s
 
 open Falka.Attributes
-[<ParserClassAttribute("Start", typeof<token>, "Number,Operator,EOF" )>]
+[<ParserClassAttribute("Start", typeof<token>)>]
 type InnerParser () = class
   [<LexerCombinator("Number","float")>]
   member this.Number stream : Result<float, token> =
