@@ -5,25 +5,24 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{d0c52634-78b7-4d71-ac05-5c5a8701fefb}</ProjectGuid>
+    <ProjectGuid>{2cb74f05-aa32-4704-aa2e-dbcb09ad587b}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Falka</RootNamespace>
-    <AssemblyName>Falka</AssemblyName>
+    <RootNamespace>TushieTest3</RootNamespace>
+    <AssemblyName>TushieTest3</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-    <Name>Falka</Name>
+    <Name>TushieTest3</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Debug\TushieTest3.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -33,50 +32,17 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\Falka.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\TushieTest3.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common">
-      <HintPath>..\dlls\Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Convertions">
-      <HintPath>..\dlls\Convertions.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Compiler.CodeDom, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809" />
-    <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809" />
-    <Reference Include="FsYaccPrinter">
-      <HintPath>..\dlls\FsYaccPrinter.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core" />
     <Reference Include="System" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="YardPrinter">
-      <HintPath>..\dlls\YardPrinter.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EngineHelpers.fs" />
-    <Compile Include="FsYacc.fs" />
-    <Compile Include="Engine.fs" />
-    <Compile Include="CodeGen.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\FalkaCommon.fsproj">
-      <Name>FalkaCommon</Name>
-      <Project>{05806d3f-2dc4-4a4e-8003-173363936fe0}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Test\Test.fsproj">
-      <Name>Test</Name>
-      <Project>{a921bb36-2f92-4e8a-8bf5-1009eaeaf99e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Unquote\Unquote.fsproj">
-      <Name>Unquote</Name>
-      <Project>{80f427b5-3aed-4d52-bc86-850a40427ecf}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />

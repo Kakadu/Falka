@@ -6,9 +6,10 @@ open Falka.Attributes
 open Falka.Utils
 open Microsoft.FSharp.Quotations
 
-let (dllname, nsname, classname) = 
+let (dllname, nsname, classname, workdir) = 
   //(@"Test.dll", @"Test", @"parser1")
-  (@"Test.dll", @"Test2", @"InnerParser")
+  (@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
+  //(@"Test.dll", @"Test3", @"InnerParser", @"..\..\..\TushieTest3")
 let doescompile = false
 let (innerParser: System.Type, startRuleName, tokenType) =
   let dll = Assembly.LoadFrom dllname
@@ -65,6 +66,7 @@ let opens =
       ; "Microsoft.FSharp.Compiler.Reflection"
     ] |> seq
 
+let () = System.IO.Directory.SetCurrentDirectory workdir
 let () =
   let rules = List.map (Engine.eval startRuleName isTokenRule) methods
   let rules = List.filter_map (fun x -> x) rules
