@@ -27,6 +27,9 @@ open Microsoft.FSharp.Reflection
 
 type token = 
   | EOF of string
+  | KW_CREATE of string
+  | KW_FUNCTION of string
+  | KW_RETURN   of string
   | KW_SELECT  of string
   | KW_FROM of string
   | KW_BEGIN of string
@@ -50,12 +53,15 @@ type token =
   | RBRACKET of string
   | SEMI of string
 let getKwToken (name: string) = 
-    let s = name.ToUpper()
+    let s = name.ToLower()
     match s with
-    | "SELECT"    -> KW_SELECT s
-    | "FROM"      -> KW_FROM s
-    | "BEGIN"     -> KW_BEGIN s
-    | "END"       -> KW_END s
+    | "select"    -> KW_SELECT s
+    | "from"      -> KW_FROM s
+    | "create"    -> KW_CREATE s
+    | "function"  -> KW_FUNCTION s
+    | "return"    -> KW_RETURN s
+    | "begin"     -> KW_BEGIN s
+    | "end"       -> KW_END s
     | _           -> IDENT name
 
 let comment_depth = ref 0

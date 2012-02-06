@@ -37,16 +37,6 @@ let (.>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'u>) : Parser<'t,'r*'u> = fun lst 
       | Failed s -> Failed s
   | Failed s  -> Failed s
 
-let many p = fun lst ->
-  let ans = ref []
-  let rec inner stream = 
-    match p stream with
-    | Success (x, tail) ->
-        ans := x :: !ans
-        inner tail
-    | Failed _ -> Success (List.rev !ans, stream)
-  inner lst
-  
 let (<|>) (p1: Parser<'t,'u>) (p2: Parser<'t,'u>) : Parser<'t,'u> = fun lst ->
   match p1 lst with
   | Success (a,b) as ans -> ans
@@ -91,3 +81,17 @@ let createParserForwardedToRef () =
     let dummyParser = fun stream -> failwith "a parser created with createParserForwardedToRef was not initialized"
     let r = ref dummyParser
     (fun stream -> !r stream), r : Parser<_,'u> * Parser<_,'u> ref
+
+let many (p: Parser<'t,'res>): Parser<'t,'res list> = 
+  fun stream ->
+    let ans = ref [] // TODO: maybe cps instead of reversing list
+    let rec inner stream =
+      match p stream with
+      | Success(res,tail) -> 
+          // TODO: check that tail <> stream
+          ans := res :: !ans
+          inner tail
+      | Failed _ -> Success(List.rev !ans,stream)
+    inner stream
+
+

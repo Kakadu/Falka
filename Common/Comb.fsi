@@ -19,3 +19,5 @@ val (<|>): Parser<'t,'u> -> Parser<'t,'u> -> Parser<'t,'u>
 
 val pipe3
   : Parser<'t,'a> -> Parser<'t,'b> -> Parser<'t,'c> -> ('a -> 'b -> 'c -> 'd) -> Parser<'t,'d>
+
+val many: Parser<'t,'res> -> Parser<'t,'res list>

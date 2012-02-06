@@ -10,189 +10,267 @@ type innerLexer (lst : token list) =
     member this.tail () = new innerLexer (List.tail lst) :> ITokenLexer<token>
   override this.ToString () = lst.ToString ()
   (* next members will be invoked via Dynamic *)
-  member this.eof : Result<string,Lexer.token> =
+  member this.eof (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | EOF x -> Success (x, o.tail())
-         | _    -> Failed "cant parse EOF"
+         | _    -> Failed (sprintf "cant parse EOF. %A is on then top" el)
 
-  member this.kw_select : Result<string,Lexer.token> =
+  member this.kw_create (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
+         | KW_CREATE x -> Success (x, o.tail())
+         | _    -> Failed (sprintf "cant parse KW_CREATE. %A is on then top" el)
+
+  member this.kw_function (): Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else 
+      let el = o.peek()
+      match el with
+         | KW_FUNCTION x -> Success (x, o.tail())
+         | _    -> Failed (sprintf "cant parse KW_FUNCTION. %A is on then top" el)
+
+  member this.kw_return (): Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else 
+      let el = o.peek()
+      match el with
+         | KW_RETURN x -> Success (x, o.tail())
+         | _    -> Failed (sprintf "cant parse KW_RETURN. %A is on then top" el)
+
+  member this.kw_select (): Result<string,Lexer.token> =
+    let o = this :> ITokenLexer<Lexer.token>
+    if o.is_empty ()
+    then Failed "input is empty"
+    else 
+      let el = o.peek()
+      match el with
          | KW_SELECT x -> Success (x, o.tail())
-         | _    -> Failed "cant parse KW_SELECT"
+         | _    -> Failed (sprintf "cant parse KW_SELECT. %A is on then top" el)
 
-  member this.kw_from : Result<string,Lexer.token> =
+  member this.kw_from (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | KW_FROM x -> Success (x, o.tail())
-         | _    -> Failed "cant parse KW_FROM"
+         | _    -> Failed (sprintf "cant parse KW_FROM. %A is on then top" el)
 
-  member this.kw_begin : Result<string,Lexer.token> =
+  member this.kw_begin (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | KW_BEGIN x -> Success (x, o.tail())
-         | _    -> Failed "cant parse KW_BEGIN"
+         | _    -> Failed (sprintf "cant parse KW_BEGIN. %A is on then top" el)
 
-  member this.kw_end : Result<string,Lexer.token> =
+  member this.kw_end (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | KW_END x -> Success (x, o.tail())
-         | _    -> Failed "cant parse KW_END"
+         | _    -> Failed (sprintf "cant parse KW_END. %A is on then top" el)
 
-  member this.string_const : Result<string,Lexer.token> =
+  member this.string_const (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | STRING_CONST x -> Success (x, o.tail())
-         | _    -> Failed "cant parse STRING_CONST"
+         | _    -> Failed (sprintf "cant parse STRING_CONST. %A is on then top" el)
 
-  member this.dec_number : Result<string,Lexer.token> =
+  member this.dec_number (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | DEC_NUMBER x -> Success (x, o.tail())
-         | _    -> Failed "cant parse DEC_NUMBER"
+         | _    -> Failed (sprintf "cant parse DEC_NUMBER. %A is on then top" el)
 
-  member this.ident : Result<string,Lexer.token> =
+  member this.ident (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | IDENT x -> Success (x, o.tail())
-         | _    -> Failed "cant parse IDENT"
+         | _    -> Failed (sprintf "cant parse IDENT. %A is on then top" el)
 
-  member this.globalvar : Result<string,Lexer.token> =
+  member this.globalvar (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | GLOBALVAR x -> Success (x, o.tail())
-         | _    -> Failed "cant parse GLOBALVAR"
+         | _    -> Failed (sprintf "cant parse GLOBALVAR. %A is on then top" el)
 
-  member this.globaltempobj : Result<string,Lexer.token> =
+  member this.globaltempobj (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | GLOBALTEMPOBJ x -> Success (x, o.tail())
-         | _    -> Failed "cant parse GLOBALTEMPOBJ"
+         | _    -> Failed (sprintf "cant parse GLOBALTEMPOBJ. %A is on then top" el)
 
-  member this.localvar : Result<string,Lexer.token> =
+  member this.localvar (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | LOCALVAR x -> Success (x, o.tail())
-         | _    -> Failed "cant parse LOCALVAR"
+         | _    -> Failed (sprintf "cant parse LOCALVAR. %A is on then top" el)
 
-  member this.tempobj : Result<string,Lexer.token> =
+  member this.tempobj (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | TEMPOBJ x -> Success (x, o.tail())
-         | _    -> Failed "cant parse TEMPOBJ"
+         | _    -> Failed (sprintf "cant parse TEMPOBJ. %A is on then top" el)
 
-  member this.dot : Result<string,Lexer.token> =
+  member this.dot (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | DOT x -> Success (x, o.tail())
-         | _    -> Failed "cant parse DOT"
+         | _    -> Failed (sprintf "cant parse DOT. %A is on then top" el)
 
-  member this.comma : Result<string,Lexer.token> =
+  member this.comma (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | COMMA x -> Success (x, o.tail())
-         | _    -> Failed "cant parse COMMA"
+         | _    -> Failed (sprintf "cant parse COMMA. %A is on then top" el)
 
-  member this.op_plus : Result<string,Lexer.token> =
+  member this.op_plus (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | OP_PLUS x -> Success (x, o.tail())
-         | _    -> Failed "cant parse OP_PLUS"
+         | _    -> Failed (sprintf "cant parse OP_PLUS. %A is on then top" el)
 
-  member this.op_eq : Result<string,Lexer.token> =
+  member this.op_eq (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | OP_EQ x -> Success (x, o.tail())
-         | _    -> Failed "cant parse OP_EQ"
+         | _    -> Failed (sprintf "cant parse OP_EQ. %A is on then top" el)
 
-  member this.op_minus : Result<string,Lexer.token> =
+  member this.op_minus (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | OP_MINUS x -> Success (x, o.tail())
-         | _    -> Failed "cant parse OP_MINUS"
+         | _    -> Failed (sprintf "cant parse OP_MINUS. %A is on then top" el)
 
-  member this.op_div : Result<string,Lexer.token> =
+  member this.op_div (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | OP_DIV x -> Success (x, o.tail())
-         | _    -> Failed "cant parse OP_DIV"
+         | _    -> Failed (sprintf "cant parse OP_DIV. %A is on then top" el)
 
-  member this.lparen : Result<string,Lexer.token> =
+  member this.lparen (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | LPAREN x -> Success (x, o.tail())
-         | _    -> Failed "cant parse LPAREN"
+         | _    -> Failed (sprintf "cant parse LPAREN. %A is on then top" el)
 
-  member this.rparen : Result<string,Lexer.token> =
+  member this.rparen (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | RPAREN x -> Success (x, o.tail())
-         | _    -> Failed "cant parse RPAREN"
+         | _    -> Failed (sprintf "cant parse RPAREN. %A is on then top" el)
 
-  member this.lbracket : Result<string,Lexer.token> =
+  member this.lbracket (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | LBRACKET x -> Success (x, o.tail())
-         | _    -> Failed "cant parse LBRACKET"
+         | _    -> Failed (sprintf "cant parse LBRACKET. %A is on then top" el)
 
-  member this.rbracket : Result<string,Lexer.token> =
+  member this.rbracket (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | RBRACKET x -> Success (x, o.tail())
-         | _    -> Failed "cant parse RBRACKET"
+         | _    -> Failed (sprintf "cant parse RBRACKET. %A is on then top" el)
 
-  member this.semi : Result<string,Lexer.token> =
+  member this.semi (): Result<string,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
-    else match o.peek ()  with
+    else 
+      let el = o.peek()
+      match el with
          | SEMI x -> Success (x, o.tail())
-         | _    -> Failed "cant parse SEMI"
+         | _    -> Failed (sprintf "cant parse SEMI. %A is on then top" el)
+
+
 
 open Falka.Comb
 open Falka.Attributes
@@ -212,85 +290,117 @@ module Ast =
   and asqlvalue = 
     | DecNumber of int
     | StringConst of string
+  and arootstmnt = 
+    | CreateFunction of string * asqlexpr list
 
 [<ParserClassAttribute("Start", typeof<token>, "Number,Operator,EOF" )>]
 type InnerParser () = 
   [<LexerCombinator("EOF","Lexer.token")>]
   member this.Eof stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?eof : unit -> Result<string,token>) ()
+  [<LexerCombinator("KW_CREATE","Lexer.token")>]
+  member this.Kw_create stream : Result<string, token> =
+    (stream?kw_create : unit -> Result<string,token>) ()
+  [<LexerCombinator("KW_FUNCTION","Lexer.token")>]
+  member this.Kw_function stream : Result<string, token> =
+    (stream?kw_function : unit -> Result<string,token>) ()
+  [<LexerCombinator("KW_RETURN","Lexer.token")>]
+  member this.Kw_return stream : Result<string, token> =
+    (stream?kw_return : unit -> Result<string,token>) ()
   [<LexerCombinator("KW_SELECT","Lexer.token")>]
   member this.Kw_select stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?kw_select : unit -> Result<string,token>) ()
   [<LexerCombinator("KW_FROM","Lexer.token")>]
   member this.Kw_from stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?kw_from : unit -> Result<string,token>) ()
   [<LexerCombinator("KW_BEGIN","Lexer.token")>]
   member this.Kw_begin stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?kw_begin : unit -> Result<string,token>) ()
   [<LexerCombinator("KW_END","Lexer.token")>]
   member this.Kw_end stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?kw_end : unit -> Result<string,token>) ()
   [<LexerCombinator("STRING_CONST","Lexer.token")>]
   member this.String_const stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?string_const : unit -> Result<string,token>) ()
   [<LexerCombinator("DEC_NUMBER","Lexer.token")>]
   member this.Dec_number stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?dec_number : unit -> Result<string,token>) ()
   [<LexerCombinator("IDENT","Lexer.token")>]
   member this.Ident stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?ident : unit -> Result<string,token>) ()
   [<LexerCombinator("GLOBALVAR","Lexer.token")>]
   member this.Globalvar stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?globalvar : unit -> Result<string,token>) ()
   [<LexerCombinator("GLOBALTEMPOBJ","Lexer.token")>]
   member this.Globaltempobj stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?globaltempobj : unit -> Result<string,token>) ()
   [<LexerCombinator("LOCALVAR","Lexer.token")>]
   member this.Localvar stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?localvar : unit -> Result<string,token>) ()
   [<LexerCombinator("TEMPOBJ","Lexer.token")>]
   member this.Tempobj stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?tempobj : unit -> Result<string,token>) ()
   [<LexerCombinator("DOT","Lexer.token")>]
   member this.Dot stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?dot : unit -> Result<string,token>) ()
   [<LexerCombinator("COMMA","Lexer.token")>]
   member this.Comma stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?comma : unit -> Result<string,token>) ()
   [<LexerCombinator("OP_PLUS","Lexer.token")>]
   member this.Op_plus stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?op_plus : unit -> Result<string,token>) ()
   [<LexerCombinator("OP_EQ","Lexer.token")>]
   member this.Op_eq stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?op_eq : unit -> Result<string,token>) ()
   [<LexerCombinator("OP_MINUS","Lexer.token")>]
   member this.Op_minus stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?op_minus : unit -> Result<string,token>) ()
   [<LexerCombinator("OP_DIV","Lexer.token")>]
   member this.Op_div stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?op_div : unit -> Result<string,token>) ()
   [<LexerCombinator("LPAREN","Lexer.token")>]
   member this.Lparen stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?lparen : unit -> Result<string,token>) ()
   [<LexerCombinator("RPAREN","Lexer.token")>]
   member this.Rparen stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?rparen : unit -> Result<string,token>) ()
   [<LexerCombinator("LBRACKET","Lexer.token")>]
   member this.Lbracket stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?lbracket : unit -> Result<string,token>) ()
   [<LexerCombinator("RBRACKET","Lexer.token")>]
   member this.Rbracket stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?rbracket : unit -> Result<string,token>) ()
   [<LexerCombinator("SEMI","Lexer.token")>]
   member this.Semi stream : Result<string, token> =
-    (stream?operator : unit -> Result<string,token>) ()
+    (stream?semi : unit -> Result<string,token>) ()
 
-(*
-  abstract member Twonumbers: ITokenLexer<token> -> Result<ast,token>
+  abstract member SqlExpression: ITokenLexer<token> -> Result<Ast.asqlexpr,token>
   [<ParserFunction>]
-  [<ReflectedDefinition>]  
-  default this.Twonumbers stream =
-    let body = this.Number >>. this.Number |>> (fun s -> ANumber s)
+  [<ReflectedDefinition>]
+  default this.SqlExpression stream =
+    let body =
+      (this.Localvar  |>> (fun s -> Ast.LocalVar s))
+      <|> (this.Ident |>> (fun s -> Ast.Ident s))
+      <|> (this.Globalvar |>> (fun s -> Ast.GlobalVar s))
+      <|> (this.Lparen >>. this.SqlExpression .>> this.Rparen)
+      <|>
+      (this.Kw_select >>. this.SqlExpression .>> this.Kw_from .>>. this.Ident
+        |>> (fun (e,where) -> Ast.Select (e, Ast.Ident where) ) )
+
     wrap_meth stream body
-*)
+
+  abstract member CreateFunction: ITokenLexer<token> -> Result<Ast.arootstmnt,token>
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
+  default this.CreateFunction stream =
+    let body =
+      this.Kw_create >>. this.Kw_function >>. this.Ident
+       .>>.
+       ((this.SqlExpression |>> (fun x -> [x]))
+        <|>
+        (this.Kw_begin >>. (many this.SqlExpression) .>> this.Kw_end)
+       )
+       |>> (fun x -> Ast.CreateFunction x)
+    wrap_meth stream body
+  
 

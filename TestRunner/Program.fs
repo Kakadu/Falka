@@ -29,8 +29,11 @@ let test2 () =
 
 open Test3
 let test3 () =
+  let test1 = "create function fun1 begin select a from b end"
+  let test2 = "create function fun1 begin end"
+  let test3 = "select a from b "
   let tokens =
-    let lexbuf = Lexing.LexBuffer<_>.FromString "select a from b"
+    let lexbuf = Lexing.LexBuffer<_>.FromString test1
     let rec getTokens () =
       seq {
         match Lexer.tokens lexbuf with
@@ -41,10 +44,15 @@ let test3 () =
       }
     getTokens ()
   ()
-  //let tokens = Seq.toList tokens
-  //printfn "tokens = %A" tokens
-let () = test3 ()
+  let lst = tokens |> Seq.toList
+  printfn "tokens = %A" lst
+  let p = new Test3.Parser.InnerParser ()
+  let lexer = new Test3.Parser.innerLexer (lst)
+  match p.CreateFunction lexer with
+  | Success (ans,_) -> printfn "ans = %A" ans
+  | Failed s        -> printfn "failed: %A" s
 
+let () = test3 ()
 
 module Codegen =
   open Microsoft.FSharp.Reflection
@@ -65,22 +73,24 @@ module Codegen =
                       | Some x-> x
                       | None -> "unit"
         let name = initName.ToLower ()
-        fprintfn h "  member this.%s : Result<%s,%s> =" name typeStr tokenTypeName
+        fprintfn h "  member this.%s (): Result<%s,%s> =" name typeStr tokenTypeName
         fprintfn h "    let o = this :> ITokenLexer<%s>" tokenTypeName
         fprintfn h "    if o.is_empty ()"
         fprintfn h "    then Failed \"input is empty\""
-        fprintfn h "    else match o.peek ()  with"
+        fprintfn h "    else "
+        fprintfn h "      let el = o.peek()"
+        fprintfn h "      match el with"
         fprintfn h "         | %s x -> Success (x, o.tail())" initName
-        fprintfn h "         | _    -> Failed \"cant parse %s\"" initName
+        fprintfn h "         | _    -> Failed (sprintf \"cant parse %s. %%A is on then top\" el)" initName
         fprintfn h ""
         let combName = initName.ToLower () |> (fun (s:string) ->
           s.ToCharArray () |> (fun (arr: _ []) -> arr.[0] <- Char.ToUpper arr.[0]; new String(arr) )
         )
         fprintfn h2 "  [<LexerCombinator(\"%s\",\"%s\")>]" initName tokenTypeName
         fprintfn h2 "  member this.%s stream : Result<%s, token> =" combName typeStr
-        fprintfn h2 "    (stream?operator : unit -> Result<%s,token>) ()" typeStr
+        fprintfn h2 "    (stream?%s : unit -> Result<%s,token>) ()" name typeStr
       )
      )
     )
  
-let _ = Codegen.codegen3 "Lexer.token"
+//let _ = Codegen.codegen3 "Lexer.token"
