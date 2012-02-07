@@ -10,20 +10,15 @@ open Microsoft.FSharp.Compiler.Reflection
 }
 
 SqlExpression: 
-      aaa = Localvar {(fun s -> ALocalVar(s)) aaa}
-    | aab = Ident {(fun s -> AIdent(s)) aab}
-    | aac = Globalvar {(fun s -> AGlobalVar(s)) aac}
-    | aae = yard_exp_brackets_1 Rparen {aae}
-    | aaf = yard_exp_brackets_2
-        {(fun (e, where) -> ASelect(e, AIdent(where))) aaf};
+      aaa = Ident {(fun s -> AIdent(s)) aaa}
+    | aab = yard_exp_brackets_1
+        {(fun (e, where) -> ASelect(e, AIdent(where))) aab};
 
 +yard_start_1:  <yard_start_1> = SqlExpression EOF {yard_start_1};
 
-yard_exp_brackets_1:  Lparen aad = SqlExpression {aad};
+yard_exp_brackets_1:  aae = yard_exp_brackets_2 aaf = Ident {(aae,aaf)};
 
-yard_exp_brackets_2:  aai = yard_exp_brackets_3 aaj = Ident {(aai,aaj)};
+yard_exp_brackets_2:  aad = yard_exp_brackets_3 Kw_from {aad};
 
-yard_exp_brackets_3:  aah = yard_exp_brackets_4 Kw_from {aah};
-
-yard_exp_brackets_4:  Kw_select aag = SqlExpression {aag};
+yard_exp_brackets_3:  Kw_select aac = SqlExpression {aac};
 

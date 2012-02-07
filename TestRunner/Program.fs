@@ -52,7 +52,7 @@ let test3 () =
   | Success (ans,_) -> printfn "ans = %A" ans
   | Failed s        -> printfn "failed: %A" s
 
-//let () = test3 ()
+let () = test3 ()
 
 module Codegen =
   open Microsoft.FSharp.Reflection
@@ -93,4 +93,4 @@ module Codegen =
      )
     )
  
-let _ = Codegen.codegen3 "Lexer.token"
+//let _ = Codegen.codegen3 "Lexer.token"

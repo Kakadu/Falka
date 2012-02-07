@@ -379,10 +379,10 @@ type InnerParser () =
   [<ReflectedDefinition>]
   default this.SqlExpression stream =
     let body =
-      (this.Localvar  |>> (fun s -> Ast.ALocalVar s))
-      <|> (this.Ident |>> (fun s -> Ast.AIdent s))
-      <|> (this.Globalvar |>> (fun s -> Ast.AGlobalVar s))
-      <|> (this.Lparen >>. this.SqlExpression .>> this.Rparen)
+      (this.Ident |>> (fun s -> Ast.AIdent s))
+//      <|> (this.Localvar  |>> (fun s -> Ast.ALocalVar s))
+//      <|> (this.Globalvar |>> (fun s -> Ast.AGlobalVar s))
+//      <|> (this.Lparen >>. this.SqlExpression .>> this.Rparen)
       <|>
       (this.Kw_select >>. this.SqlExpression .>> this.Kw_from .>>. this.Ident
         |>> (fun (e,where) -> Ast.ASelect (e, Ast.AIdent where) ) )
@@ -398,7 +398,7 @@ type InnerParser () =
        .>>.
        ((this.SqlExpression |>> (fun x -> [x]))
         <|>
-        (this.Kw_begin >>. (many this.SqlExpression) .>> this.Kw_end)
+        ((this.Kw_begin >>. (many this.SqlExpression)) .>> this.Kw_end)
        )
        |>> (fun x -> Ast.ACreateFunction x)
     wrap_meth stream body
