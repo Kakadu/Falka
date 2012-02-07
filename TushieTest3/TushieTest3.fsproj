@@ -41,6 +41,7 @@
     <None Include="asdf.fsy" />
     <Compile Include="asdf.fsi" />
     <Compile Include="asdf.fs" />
+    <Compile Include="Tushie.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

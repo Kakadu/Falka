@@ -1,6 +1,6 @@
 
 {
-open 
+open Test3.Parser.Ast
 open Test3.Lexer
 open Test3.Parser
 open Microsoft.FSharp.Quotations
@@ -10,17 +10,20 @@ open Microsoft.FSharp.Compiler.Reflection
 }
 
 SqlExpression: 
-      aaa = LOCALVAR {(fun s -> LocalVar(s)) aaa}
-    | aab = IDENT {(fun s -> Ident(s)) aab}
-    | aac = GLOBALVAR {(fun s -> GlobalVar(s)) aac}
-    | aae = ( LPAREN aad = SqlExpression {aad} ) RPAREN {aae}
-    | aaf = ( aai = ( aah = ( KW_SELECT aag = SqlExpression {aag} ) KW_FROM
-        {aah} ) aaj = IDENT {(aai,aaj)} )
-        {(fun (e, where) -> Select(e, Ident(where))) aaf};
+      aaa = Localvar {(fun s -> ALocalVar(s)) aaa}
+    | aab = Ident {(fun s -> AIdent(s)) aab}
+    | aac = Globalvar {(fun s -> AGlobalVar(s)) aac}
+    | aae = yard_exp_brackets_1 Rparen {aae}
+    | aaf = yard_exp_brackets_2
+        {(fun (e, where) -> ASelect(e, AIdent(where))) aaf};
 
-CreateFunction:  aak = ( aaq = ( ( KW_CREATE aal = KW_FUNCTION {aal} ) aam =
-    IDENT {aam} ) aar = (
-      aan = SqlExpression {(fun x -> [x]) aan}
-    | aap = ( KW_BEGIN aao = SqlExpression * {aao} ) KW_END {aap} ) {(aaq,aar)}
-    ) {(fun x -> (fun (arg0, arg1) -> CreateFunction(arg0, arg1)) x) aak};
++yard_start_1:  <yard_start_1> = SqlExpression EOF {yard_start_1};
+
+yard_exp_brackets_1:  Lparen aad = SqlExpression {aad};
+
+yard_exp_brackets_2:  aai = yard_exp_brackets_3 aaj = Ident {(aai,aaj)};
+
+yard_exp_brackets_3:  aah = yard_exp_brackets_4 Kw_from {aah};
+
+yard_exp_brackets_4:  Kw_select aag = SqlExpression {aag};
 

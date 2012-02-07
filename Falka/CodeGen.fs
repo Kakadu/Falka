@@ -37,7 +37,7 @@ let getSource (nsname,classname) (startRule,yaccStartRuleName) killedRules usedT
   )
   fprintfn h "  | _ -> None"
   fprintfn h ""
-  fprintfn h "// used tokens: %A" usedTokens
+  //fprintfn h "// used tokens: %A" usedTokens
   fprintfn h "type InnerParser () = class"
   fprintfn h "  inherit %s.%s ()" nsname classname
   fprintfn h "  override this.%s (stream: ITokenLexer<_>) =" startRule
@@ -60,7 +60,12 @@ let getSource (nsname,classname) (startRule,yaccStartRuleName) killedRules usedT
   fprintfn h "      let res = GeneratedParser.Yacc.%s tokenizer (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")" yaccStartRuleName
   fprintfn h "      Success (res, !curstream)\n"
   fprintfn h "    with"
-  fprintfn h "      | exn -> raise exn"
+  fprintfn h "      | exn ->"
+  fprintfn h "          if exn.Message.Equals(\"parse error\")"
+  fprintfn h "          then Failed \"fsyacc raised exception about parse error\""
+  fprintfn h "          else"
+  fprintfn h "            System.Console.WriteLine(exn.StackTrace)"
+  fprintfn h "            raise exn"
   fprintfn h "end"
   h.Close ()
 

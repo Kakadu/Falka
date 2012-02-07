@@ -281,22 +281,22 @@ let wrap_meth s (f : Parser<_,_>) = f s
 module Ast = 
   type aBinOp = OpPlus | OpMinus
   type asqlexpr = 
-    | SqlValue of asqlvalue
-    | LocalVar of string
-    | GlobalVar of string
-    | Ident of string
-    | Select of asqlexpr * asqlexpr
-    | BinOp of aBinOp * asqlexpr * asqlexpr
+    | ASqlValue of asqlvalue
+    | ALocalVar of string
+    | AGlobalVar of string
+    | AIdent of string
+    | ASelect of asqlexpr * asqlexpr
+    | ABinOp of aBinOp * asqlexpr * asqlexpr
   and asqlvalue = 
-    | DecNumber of int
-    | StringConst of string
+    | ADecNumber of int
+    | AStringConst of string
   and arootstmnt = 
-    | CreateFunction of string * asqlexpr list
+    | ACreateFunction of string * asqlexpr list
 
-[<ParserClassAttribute("Start", "Test3.Lexer", "")>]
+[<ParserClassAttribute("SqlExpression", "Test3.Lexer", "Test3.Parser.Ast")>]
 type InnerParser () = 
   [<LexerCombinator("EOF","string")>]
-  member this.Eof stream : Result<string, token> =
+  member this.EOF stream : Result<string, token> =
     (stream?eof : unit -> Result<string,token>) ()
   [<LexerCombinator("KW_CREATE","string")>]
   member this.Kw_create stream : Result<string, token> =
@@ -379,19 +379,19 @@ type InnerParser () =
   [<ReflectedDefinition>]
   default this.SqlExpression stream =
     let body =
-      (this.Localvar  |>> (fun s -> Ast.LocalVar s))
-      <|> (this.Ident |>> (fun s -> Ast.Ident s))
-      <|> (this.Globalvar |>> (fun s -> Ast.GlobalVar s))
+      (this.Localvar  |>> (fun s -> Ast.ALocalVar s))
+      <|> (this.Ident |>> (fun s -> Ast.AIdent s))
+      <|> (this.Globalvar |>> (fun s -> Ast.AGlobalVar s))
       <|> (this.Lparen >>. this.SqlExpression .>> this.Rparen)
       <|>
       (this.Kw_select >>. this.SqlExpression .>> this.Kw_from .>>. this.Ident
-        |>> (fun (e,where) -> Ast.Select (e, Ast.Ident where) ) )
+        |>> (fun (e,where) -> Ast.ASelect (e, Ast.AIdent where) ) )
 
     wrap_meth stream body
 
   abstract member CreateFunction: ITokenLexer<token> -> Result<Ast.arootstmnt,token>
-  [<ParserFunction>]
-  [<ReflectedDefinition>]
+  //[<ParserFunction>]
+  //[<ReflectedDefinition>]
   default this.CreateFunction stream =
     let body =
       this.Kw_create >>. this.Kw_function >>. this.Ident
@@ -400,7 +400,7 @@ type InnerParser () =
         <|>
         (this.Kw_begin >>. (many this.SqlExpression) .>> this.Kw_end)
        )
-       |>> (fun x -> Ast.CreateFunction x)
+       |>> (fun x -> Ast.ACreateFunction x)
     wrap_meth stream body
   
 

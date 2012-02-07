@@ -26,7 +26,7 @@ let test2 () =
         printfn "tail = %A" tail
     | Failed s -> printfn "Parsing failed: %s\n" s
   ()
-(*
+
 open Test3
 let test3 () =
   let test1 = "create function fun1 begin select a from b end"
@@ -53,7 +53,7 @@ let test3 () =
   | Failed s        -> printfn "failed: %A" s
 
 //let () = test3 ()
-*)
+
 module Codegen =
   open Microsoft.FSharp.Reflection
   open System.Reflection
