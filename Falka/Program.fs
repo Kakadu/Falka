@@ -9,17 +9,21 @@ open Microsoft.FSharp.Quotations
 let (dllname, nsname, classname, workdir) = 
   //(@"Test.dll", @"Test", @"parser1")
   (@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
-  //(@"Test.dll", @"Test3", @"InnerParser", @"..\..\..\TushieTest3")
+  //(@"Test.dll", @"Test3.Parser", @"InnerParser", @"..\..\..\TushieTest3")
 let doescompile = false
-let (innerParser: System.Type, startRuleName, tokenType) =
+let (innerParser: System.Type, parserAttribute) =
   let dll = Assembly.LoadFrom dllname
   let rootns = dll.GetType nsname
   let _inn : MemberInfo [] = rootns.GetMember classname
   let parser = _inn.GetValue 0 :?> System.Type
   match isParserClass parser with
-  | Some attr -> (parser, attr.StartRuleName, attr.TokensType)
+  | Some attr -> (parser, attr)
   | None -> failwith (sprintf "It seems that %s has no start Rule defined\n" parser.Name)
 
+let (startRuleName, tokenNamespace, extraNamespaces) =
+  ( parserAttribute.StartRuleName
+  , parserAttribute.TokenNamespace
+  , parserAttribute.ExtraNamespaces)
 let methods =
   // TODO: look at properties too.
   // NB. We cannot appply ReflectedDefinition Attribute to properrties
@@ -34,15 +38,20 @@ let methods =
     | Some body -> Some (m,body) 
   )
 
-let getTokeType,isTokenRule =
-  let lst =
+let tokensData = 
     innerParser.GetMethods () |> Array.filter_map (fun mi ->
       mi |> isLexerCombinatorFunction |> Option.map (fun x -> (mi,x))
     )
+
+let getTokeType,isTokenRule =
   let isTokenRule s =
-    lst |> Array.exists (fun (_,attr:LexerCombinatorAttribute) -> attr.TokenName.Equals(s))
+    tokensData
+      |> Array.find_opt (fun (mi: MethodInfo,_) -> mi.Name.Equals(s)) 
+      //|> Option.map (fun (_,x) -> x.TokenName)
+      |> Option.map (fun (mi,_) -> mi.Name)
   let getTokenType s =
-    lst
+    // if token = A of string ans s=="A" returns `string`
+    tokensData
     |> Array.find_opt (fun (mi,_) -> mi.Name.Equals(s))
     |> Option.map (fun (_,attr) -> attr.TokenType)
   (getTokenType, isTokenRule)
@@ -59,7 +68,10 @@ let () =
 open EngineHelpers
 
 let opens = 
-    [ nsname
+  Seq.append 
+    extraNamespaces
+    [ tokenNamespace
+      ; nsname
       ; "Microsoft.FSharp.Quotations"
       ; "Microsoft.FSharp.Quotations.Patterns"
       ; "Microsoft.FSharp.Compiler"
@@ -67,13 +79,18 @@ let opens =
     ] |> seq
 
 let () = System.IO.Directory.SetCurrentDirectory workdir
-let () =
+
+let (yaccStartRuleName, usedTokens) =
   let rules = List.map (Engine.eval startRuleName isTokenRule) methods
   let rules = List.filter_map (fun x -> x) rules
-  let expander = new Yard.Core.Convertions.ExpandBrackets.ExpandBrackets ()
-  let rules = expander.ConvertList rules
-  (*let eofer = new Yard.Core.Convertions.AddEOF.AddEOF ()
-  let rules = eofer.ConvertList rules *)
+
+  let rules = 
+    let expander = new Yard.Core.Convertions.ExpandBrackets.ExpandBrackets ()
+    expander.ConvertList rules
+  let rules = 
+    let eofer = new Yard.Core.Convertions.AddEOF.AddEOF ()
+    eofer.ConvertList rules
+  let usedTokens = Yard.Generators.FsYaccPrinter.Generator.findTokens rules
   let headtext = sprintf "\nopen %s\n" (String.concat "\nopen " opens)
   let definition = ILHelper.makeDefinition rules "filename" (Some headtext)
   Printf.printfn "\nGrammar is:"
@@ -82,11 +99,17 @@ let () =
                   Printf.printfn "%s" s
                   System.IO.File.WriteAllLines("gr.yrd", [s])
                )
+  let startRuleName = 
+    let startRule = definition.grammar |> List.tryFind (fun rule -> rule._public)
+    match startRule with
+    | Some x -> x.name
+    | None -> failwith "this grammar has not start rule"
   let tokenTyper (tname:string) =
     match getTokeType tname with
     | Some x -> x
     | None  -> failwith (sprintf "Token type is not specified for token %s" tname)
   FsYacc.print "asdf.fsy" tokenTyper definition
+  (startRuleName,usedTokens)
 
 let () =
   System.IO.File.WriteAllLines(@"log.txt", !loglines)
@@ -101,10 +124,9 @@ let evalNewAssembly (asm: Assembly) =
 let () =
   if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
   then
-    FsYacc.fixFsYaccOutput "asdf" nsname
     let rules2kill = []
     //TODO: rules to kill are such rules which are used inside of startRule
-    CodeGen.getSource (nsname,classname) startRuleName rules2kill
+    CodeGen.getSource (nsname,classname) (startRuleName,yaccStartRuleName) rules2kill usedTokens (tokenNamespace,tokensData)
     if doescompile
     then
       match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with

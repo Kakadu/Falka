@@ -16,7 +16,10 @@ let referencedAssemblies =
   ;@"C:\Program Files\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0\FSharp.Core.dll"
   ;@"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.Compiler.CodeDom.dll"]
 
-let getSource (nsname,classname) startRule killedRules =
+open Falka.Attributes
+
+let getSource (nsname,classname) (startRule,yaccStartRuleName) killedRules usedTokens 
+  (tokenNamespace, tokensData: (MethodInfo*LexerCombinatorAttribute)[]) =
   printfn "Generating Source: startRule=%s, killed rules = %A" startRule killedRules
   let h = new StreamWriter (tempFileName)
   fprintfn h "module %s" newModule
@@ -24,6 +27,17 @@ let getSource (nsname,classname) startRule killedRules =
   fprintfn h "open Falka.Comb"
   fprintfn h "open Microsoft.FSharp.Compiler.Reflection"
   fprintfn h ""
+  fprintfn h "let wrapToken: %s.token -> GeneratedParser.Yacc.token option = function" tokenNamespace
+  usedTokens |> List.iter (fun (name:string) ->
+    if name.Equals("EOF") then ()
+    else
+      let datum = tokensData |> Array.find (fun (mi,_) -> name.Equals(mi.Name))
+      fprintf h "  | %s.%s x -> " tokenNamespace (snd datum).TokenName
+      fprintfn h " Some (%s%s%s x)" "GeneratedParser.Yacc" "." (fst datum).Name
+  )
+  fprintfn h "  | _ -> None"
+  fprintfn h ""
+  fprintfn h "// used tokens: %A" usedTokens
   fprintfn h "type InnerParser () = class"
   fprintfn h "  inherit %s.%s ()" nsname classname
   fprintfn h "  override this.%s (stream: ITokenLexer<_>) =" startRule
@@ -33,14 +47,20 @@ let getSource (nsname,classname) startRule killedRules =
   fprintfn h "      then failwith \"fuck\""
   fprintfn h "      else"
   fprintfn h "        let ans = (!curstream).peek ()"
+  fprintfn h "        let ans = "
+  fprintfn h "          match wrapToken ans with"
+  fprintfn h "          | Some ans -> ans"
+  fprintfn h "          | None     -> GeneratedParser.Yacc.EOF \"\""
   fprintfn h "        Printf.printfn \"ans = %%A\" ans"
   fprintfn h "        curstream := (!curstream).tail ()"
   fprintfn h "        lexbuf.StartPos <- Position.FirstLine(\"%s\")" "filename"
-  //fprintfn h "        lexbuf.EndPos <- lexbuf.StartPos.EndOfToken(String.length ans?Item)"
   fprintfn h "        lexbuf.EndPos <- lexbuf.StartPos.EndOfToken(1)"
   fprintfn h "        ans"
-  fprintfn h "    let res = GeneratedParser.Yacc.%s tokenizer (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")" startRule
-  fprintfn h "    Success (res, !curstream)\n"
+  fprintfn h "    try"
+  fprintfn h "      let res = GeneratedParser.Yacc.%s tokenizer (LexBuffer<_>.FromString \"asdfasfdasdfasdf\")" yaccStartRuleName
+  fprintfn h "      Success (res, !curstream)\n"
+  fprintfn h "    with"
+  fprintfn h "      | exn -> raise exn"
   fprintfn h "end"
   h.Close ()
 

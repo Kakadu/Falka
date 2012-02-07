@@ -1,21 +1,26 @@
 ﻿module Falka.Attributes
 open Falka.Utils
 
-type parserStrategy = GLR | LALR | RecDes
+//type parserStrategy = GLR | LALR | RecDes
 
-type ParserClassAttribute (start: string, tokenstype:System.Type) =
+type ParserClassAttribute (start: string, tokenNamespace:string, extraNamespaces: string) =
     inherit System.Attribute()
     member this.StartRuleName = start
-    member this.TokensType = tokenstype
+    member this.TokenNamespace = tokenNamespace
+    member this.ExtraNamespaces =
+      if System.String.IsNullOrEmpty(extraNamespaces)
+      then [| |]
+      else extraNamespaces.Split ','
 
 type LexerCombinatorAttribute(tokenName: string, tokenType: string) =
     inherit System.Attribute()
     member this.TokenName = tokenName
     member this.TokenType = tokenType
+    override this.ToString() = sprintf "(%s,%s)" tokenName  tokenType
 
 type ParserFunctionAttribute () =
     inherit System.Attribute()
-
+(*
 type GLRAttribute () = 
     inherit ParserFunctionAttribute()
 
@@ -24,7 +29,7 @@ type LALRAttribute () =
 
 type RecDesAttribute () = 
     inherit ParserFunctionAttribute()
-
+*)
 let isParserFunction (mem: System.Reflection.MemberInfo) =
   let attrs = mem.GetCustomAttributes false
   attrs |> Array.fold (fun acc x ->

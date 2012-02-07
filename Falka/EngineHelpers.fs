@@ -28,6 +28,10 @@ let (|GrGrDot|_|) (e: MethodInfo) =
   match e with
   | _ when e.Name = "op_GreaterGreaterDot" -> Some GrGrDot
   | _ -> None
+let (|DotGrGrDot|_|) (e: MethodInfo) = 
+  match e with
+  | _ when e.Name = "op_DotGreaterGreaterDot" -> Some DotGrGrDot
+  | _ -> None
 let (|DotGrGr|_|) (e: MethodInfo) =
   match e with
   | _ when e.Name = "op_DotGreaterGreater" -> Some DotGrGr

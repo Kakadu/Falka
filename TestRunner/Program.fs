@@ -26,7 +26,7 @@ let test2 () =
         printfn "tail = %A" tail
     | Failed s -> printfn "Parsing failed: %s\n" s
   ()
-
+(*
 open Test3
 let test3 () =
   let test1 = "create function fun1 begin select a from b end"
@@ -52,8 +52,8 @@ let test3 () =
   | Success (ans,_) -> printfn "ans = %A" ans
   | Failed s        -> printfn "failed: %A" s
 
-let () = test3 ()
-
+//let () = test3 ()
+*)
 module Codegen =
   open Microsoft.FSharp.Reflection
   open System.Reflection
@@ -86,11 +86,11 @@ module Codegen =
         let combName = initName.ToLower () |> (fun (s:string) ->
           s.ToCharArray () |> (fun (arr: _ []) -> arr.[0] <- Char.ToUpper arr.[0]; new String(arr) )
         )
-        fprintfn h2 "  [<LexerCombinator(\"%s\",\"%s\")>]" initName tokenTypeName
+        fprintfn h2 "  [<LexerCombinator(\"%s\",\"%s\")>]" initName typeStr
         fprintfn h2 "  member this.%s stream : Result<%s, token> =" combName typeStr
         fprintfn h2 "    (stream?%s : unit -> Result<%s,token>) ()" name typeStr
       )
      )
     )
  
-//let _ = Codegen.codegen3 "Lexer.token"
+let _ = Codegen.codegen3 "Lexer.token"

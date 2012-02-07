@@ -1,0 +1,26 @@
+
+{
+open 
+open Test3.Lexer
+open Test3.Parser
+open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Quotations.Patterns
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.Reflection
+}
+
+SqlExpression: 
+      aaa = LOCALVAR {(fun s -> LocalVar(s)) aaa}
+    | aab = IDENT {(fun s -> Ident(s)) aab}
+    | aac = GLOBALVAR {(fun s -> GlobalVar(s)) aac}
+    | aae = ( LPAREN aad = SqlExpression {aad} ) RPAREN {aae}
+    | aaf = ( aai = ( aah = ( KW_SELECT aag = SqlExpression {aag} ) KW_FROM
+        {aah} ) aaj = IDENT {(aai,aaj)} )
+        {(fun (e, where) -> Select(e, Ident(where))) aaf};
+
+CreateFunction:  aak = ( aaq = ( ( KW_CREATE aal = KW_FUNCTION {aal} ) aam =
+    IDENT {aam} ) aar = (
+      aan = SqlExpression {(fun x -> [x]) aan}
+    | aap = ( KW_BEGIN aao = SqlExpression * {aao} ) KW_END {aap} ) {(aaq,aar)}
+    ) {(fun x -> (fun (arg0, arg1) -> CreateFunction(arg0, arg1)) x) aak};
+

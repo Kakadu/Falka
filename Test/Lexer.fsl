@@ -52,6 +52,7 @@ type token =
   | LBRACKET of string
   | RBRACKET of string
   | SEMI of string
+
 let getKwToken (name: string) = 
     let s = name.ToLower()
     match s with

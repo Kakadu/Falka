@@ -1,0 +1,17 @@
+
+{
+open Test2
+open Test2
+open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Quotations.Patterns
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.Reflection
+}
+
+Expression: 
+      aaa = Number aab = Operator aac = Expression
+        {(fun a op c -> AExpr(op, ANumber(a), c)) aaa aab aac}
+    | aad = Number {(fun x -> ANumber(x)) aad};
+
++yard_start_1:  <yard_start_1> = Expression EOF {yard_start_1};
+

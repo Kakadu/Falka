@@ -293,84 +293,84 @@ module Ast =
   and arootstmnt = 
     | CreateFunction of string * asqlexpr list
 
-[<ParserClassAttribute("Start", typeof<token>)>]
+[<ParserClassAttribute("Start", "Test3.Lexer", "")>]
 type InnerParser () = 
-  [<LexerCombinator("EOF","Lexer.token")>]
+  [<LexerCombinator("EOF","string")>]
   member this.Eof stream : Result<string, token> =
     (stream?eof : unit -> Result<string,token>) ()
-  [<LexerCombinator("KW_CREATE","Lexer.token")>]
+  [<LexerCombinator("KW_CREATE","string")>]
   member this.Kw_create stream : Result<string, token> =
     (stream?kw_create : unit -> Result<string,token>) ()
-  [<LexerCombinator("KW_FUNCTION","Lexer.token")>]
+  [<LexerCombinator("KW_FUNCTION","string")>]
   member this.Kw_function stream : Result<string, token> =
     (stream?kw_function : unit -> Result<string,token>) ()
-  [<LexerCombinator("KW_RETURN","Lexer.token")>]
+  [<LexerCombinator("KW_RETURN","string")>]
   member this.Kw_return stream : Result<string, token> =
     (stream?kw_return : unit -> Result<string,token>) ()
-  [<LexerCombinator("KW_SELECT","Lexer.token")>]
+  [<LexerCombinator("KW_SELECT","string")>]
   member this.Kw_select stream : Result<string, token> =
     (stream?kw_select : unit -> Result<string,token>) ()
-  [<LexerCombinator("KW_FROM","Lexer.token")>]
+  [<LexerCombinator("KW_FROM","string")>]
   member this.Kw_from stream : Result<string, token> =
     (stream?kw_from : unit -> Result<string,token>) ()
-  [<LexerCombinator("KW_BEGIN","Lexer.token")>]
+  [<LexerCombinator("KW_BEGIN","string")>]
   member this.Kw_begin stream : Result<string, token> =
     (stream?kw_begin : unit -> Result<string,token>) ()
-  [<LexerCombinator("KW_END","Lexer.token")>]
+  [<LexerCombinator("KW_END","string")>]
   member this.Kw_end stream : Result<string, token> =
     (stream?kw_end : unit -> Result<string,token>) ()
-  [<LexerCombinator("STRING_CONST","Lexer.token")>]
+  [<LexerCombinator("STRING_CONST","string")>]
   member this.String_const stream : Result<string, token> =
     (stream?string_const : unit -> Result<string,token>) ()
-  [<LexerCombinator("DEC_NUMBER","Lexer.token")>]
+  [<LexerCombinator("DEC_NUMBER","string")>]
   member this.Dec_number stream : Result<string, token> =
     (stream?dec_number : unit -> Result<string,token>) ()
-  [<LexerCombinator("IDENT","Lexer.token")>]
+  [<LexerCombinator("IDENT","string")>]
   member this.Ident stream : Result<string, token> =
     (stream?ident : unit -> Result<string,token>) ()
-  [<LexerCombinator("GLOBALVAR","Lexer.token")>]
+  [<LexerCombinator("GLOBALVAR","string")>]
   member this.Globalvar stream : Result<string, token> =
     (stream?globalvar : unit -> Result<string,token>) ()
-  [<LexerCombinator("GLOBALTEMPOBJ","Lexer.token")>]
+  [<LexerCombinator("GLOBALTEMPOBJ","string")>]
   member this.Globaltempobj stream : Result<string, token> =
     (stream?globaltempobj : unit -> Result<string,token>) ()
-  [<LexerCombinator("LOCALVAR","Lexer.token")>]
+  [<LexerCombinator("LOCALVAR","string")>]
   member this.Localvar stream : Result<string, token> =
     (stream?localvar : unit -> Result<string,token>) ()
-  [<LexerCombinator("TEMPOBJ","Lexer.token")>]
+  [<LexerCombinator("TEMPOBJ","string")>]
   member this.Tempobj stream : Result<string, token> =
     (stream?tempobj : unit -> Result<string,token>) ()
-  [<LexerCombinator("DOT","Lexer.token")>]
+  [<LexerCombinator("DOT","string")>]
   member this.Dot stream : Result<string, token> =
     (stream?dot : unit -> Result<string,token>) ()
-  [<LexerCombinator("COMMA","Lexer.token")>]
+  [<LexerCombinator("COMMA","string")>]
   member this.Comma stream : Result<string, token> =
     (stream?comma : unit -> Result<string,token>) ()
-  [<LexerCombinator("OP_PLUS","Lexer.token")>]
+  [<LexerCombinator("OP_PLUS","string")>]
   member this.Op_plus stream : Result<string, token> =
     (stream?op_plus : unit -> Result<string,token>) ()
-  [<LexerCombinator("OP_EQ","Lexer.token")>]
+  [<LexerCombinator("OP_EQ","string")>]
   member this.Op_eq stream : Result<string, token> =
     (stream?op_eq : unit -> Result<string,token>) ()
-  [<LexerCombinator("OP_MINUS","Lexer.token")>]
+  [<LexerCombinator("OP_MINUS","string")>]
   member this.Op_minus stream : Result<string, token> =
     (stream?op_minus : unit -> Result<string,token>) ()
-  [<LexerCombinator("OP_DIV","Lexer.token")>]
+  [<LexerCombinator("OP_DIV","string")>]
   member this.Op_div stream : Result<string, token> =
     (stream?op_div : unit -> Result<string,token>) ()
-  [<LexerCombinator("LPAREN","Lexer.token")>]
+  [<LexerCombinator("LPAREN","string")>]
   member this.Lparen stream : Result<string, token> =
     (stream?lparen : unit -> Result<string,token>) ()
-  [<LexerCombinator("RPAREN","Lexer.token")>]
+  [<LexerCombinator("RPAREN","string")>]
   member this.Rparen stream : Result<string, token> =
     (stream?rparen : unit -> Result<string,token>) ()
-  [<LexerCombinator("LBRACKET","Lexer.token")>]
+  [<LexerCombinator("LBRACKET","string")>]
   member this.Lbracket stream : Result<string, token> =
     (stream?lbracket : unit -> Result<string,token>) ()
-  [<LexerCombinator("RBRACKET","Lexer.token")>]
+  [<LexerCombinator("RBRACKET","string")>]
   member this.Rbracket stream : Result<string, token> =
     (stream?rbracket : unit -> Result<string,token>) ()
-  [<LexerCombinator("SEMI","Lexer.token")>]
+  [<LexerCombinator("SEMI","string")>]
   member this.Semi stream : Result<string, token> =
     (stream?semi : unit -> Result<string,token>) ()
 

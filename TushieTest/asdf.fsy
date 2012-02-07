@@ -1,6 +1,7 @@
 %{
 
 open Test2
+open Test2
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Compiler
@@ -11,19 +12,15 @@ open Microsoft.FSharp.Compiler.Reflection
 %token <string> Operator
 %token <float> Number
 
-%start Start
+%start yard_start_1
 
-%type <'a> Start
+%type <'a> yard_start_1
 
 %%
 
-Twonumbers :  yard_exp_brackets_1 { let aaa=$1  in (fun s -> ANumber(s)) aaa}
-
 Expression :  Number Operator Expression
-               { let aac=$1  in let aad=$2  in let aae=$3  in (fun a op c -> AExpr(op, ANumber(a), c)) aac aad aae}
-             | Number { let aaf=$1  in (fun x -> ANumber(x)) aaf}
+               { let aaa=$1  in let aab=$2  in let aac=$3  in (fun a op c -> AExpr(op, ANumber(a), c)) aaa aab aac}
+             | Number { let aad=$1  in (fun x -> ANumber(x)) aad}
 
-Start :  Expression EOF { let aag=$1  in aag}
-
-yard_exp_brackets_1 :  Number Number { let aab=$2  in aab}
+yard_start_1 :  Expression EOF { let yard_start_1=$1  in yard_start_1}
 

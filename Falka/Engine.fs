@@ -20,7 +20,7 @@ let decompile f = f |> Unquote.Operators.reduce |> Unquote.Operators.decompile
 let error x = raise (EvalFail x)
 let nextIdent = EngineHelpers.makeIdentFunc ()
 
-let eval startRuleName (isTokenRule: string -> bool) (meth: MethodInfo,expr: Expr) =
+let eval startRuleName (isTokenRule: string -> string option) (meth: MethodInfo,expr: Expr) =
   let matcher e = 
     // Maybe to use `OK of 'a | Error of exn` instead of exception to be sure that
     // all exception were catched
@@ -31,9 +31,9 @@ let eval startRuleName (isTokenRule: string -> bool) (meth: MethodInfo,expr: Exp
           // TODO: maybe we should patch FsYaccGenerator to explain generator which 
           // names we should use for tokens and rule names (afair in grammar name 
           // NUMBER is associated with Lexer's T_NUMBER variant.
-          if isTokenRule mi.Name
-          then Production.PToken (ILHelper.make_Sourcet mi.Name)
-          else Production.PRef (ILHelper.make_Sourcet mi.Name,None)
+          match isTokenRule mi.Name with
+          | Some x -> Production.PToken (ILHelper.make_Sourcet x)
+          | None   -> Production.PRef (ILHelper.make_Sourcet mi.Name,None)
       | Call (_,mi,args) -> 
         begin
             match mi with
@@ -41,10 +41,19 @@ let eval startRuleName (isTokenRule: string -> bool) (meth: MethodInfo,expr: Exp
                 if List.length args <> 2 then error' ".>> should have 2 parameters"
                 let (l,r) = List.head args, List.nth args 1
                 let (l,r) = inner l, inner r
-                let right_bind = nextIdent () |> ILHelper.make_Sourcet |> (fun x -> Some x)
-                let (l,r) = (ILHelper.makeElem right_bind l false None
+                let left_bind = nextIdent () |> ILHelper.make_Sourcet |> (fun x -> Some x)
+                let (l,r) = (ILHelper.makeElem left_bind l false None
                             ,ILHelper.makeElem None r false None)
-                Production.PSeq ([l;r], right_bind)
+                Production.PSeq ([l;r], left_bind)
+            | DotGrGrDot -> // .>>.
+                if List.length args <> 2 then error' ".>>. should have 2 parameters"
+                let (l,r) = List.head args, List.nth args 1
+                let (l,r) = inner l, inner r
+                let (xLeft,xRight) = (nextIdent (), nextIdent ())
+                let action = sprintf "(%s,%s)" xLeft xRight |> ILHelper.make_Sourcet
+                let (l,r) = (ILHelper.makeElem (Some (ILHelper.make_Sourcet xLeft))  l false None
+                            ,ILHelper.makeElem (Some (ILHelper.make_Sourcet xRight)) r false None)
+                Production.PSeq ([l;r], Some action)
             | GrGrDot ->  // >>.
                 if List.length args <> 2 then error' ">>. should have 2 parameters"
                 let (l,r) = List.head args, List.nth args 1
