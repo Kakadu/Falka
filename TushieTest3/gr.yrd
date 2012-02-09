@@ -16,9 +16,9 @@ SqlExpression:
 
 +yard_start_1:  <yard_start_1> = SqlExpression EOF {yard_start_1};
 
-yard_exp_brackets_1:  aae = yard_exp_brackets_2 aaf = Ident {(aae,aaf)};
+yard_exp_brackets_1:  aae = yard_exp_brackets_3 aaf = Ident {(aae,aaf)};
 
-yard_exp_brackets_2:  aad = yard_exp_brackets_3 Kw_from {aad};
+yard_exp_brackets_3:  aad = yard_exp_brackets_6 Kw_from {aad};
 
-yard_exp_brackets_3:  Kw_select aac = SqlExpression {aac};
+yard_exp_brackets_6:  Kw_select aac = SqlExpression {aac};
 

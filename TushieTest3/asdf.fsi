@@ -17,8 +17,8 @@ type nonTerminalId =
     | NONTERM_SqlExpression
     | NONTERM_yard_start_1
     | NONTERM_yard_exp_brackets_1
-    | NONTERM_yard_exp_brackets_2
     | NONTERM_yard_exp_brackets_3
+    | NONTERM_yard_exp_brackets_6
 /// This function maps integers indexes to symbolic token ids
 val tagOfToken: token -> int
 

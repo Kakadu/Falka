@@ -390,8 +390,8 @@ type InnerParser () =
     wrap_meth stream body
 
   abstract member CreateFunction: ITokenLexer<token> -> Result<Ast.arootstmnt,token>
-  //[<ParserFunction>]
-  //[<ReflectedDefinition>]
+  [<ParserFunction>]
+  [<ReflectedDefinition>]
   default this.CreateFunction stream =
     let body =
       this.Kw_create >>. this.Kw_function >>. this.Ident

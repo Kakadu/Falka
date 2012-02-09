@@ -83,13 +83,17 @@ let () = System.IO.Directory.SetCurrentDirectory workdir
 let (yaccStartRuleName, usedTokens) =
   let rules = List.map (Engine.eval startRuleName isTokenRule) methods
   let rules = List.filter_map (fun x -> x) rules
-
   let rules = 
     let expander = new Yard.Core.Convertions.ExpandBrackets.ExpandBrackets ()
     expander.ConvertList rules
   let rules = 
     let eofer = new Yard.Core.Convertions.AddEOF.AddEOF ()
     eofer.ConvertList rules
+  let usedRuleNames = Yard.Core.Checkers.reachableRulesInfo_of_list rules
+  printfn "rules = %A" (rules |> List.map (fun r -> r.name))
+  printfn "usedRuleNames = %A" usedRuleNames
+  let rules = 
+    rules |> List.filter (fun r -> usedRuleNames |> List.exists (fun name -> name = r.name))
   let usedTokens = Yard.Generators.FsYaccPrinter.Generator.findTokens rules
   let headtext = sprintf "\nopen %s\n" (String.concat "\nopen " opens)
   let definition = ILHelper.makeDefinition rules "filename" (Some headtext)

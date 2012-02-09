@@ -26,10 +26,10 @@ SqlExpression :  Ident { let aaa=$1  in (fun s -> AIdent(s)) aaa}
 
 yard_start_1 :  SqlExpression EOF { let yard_start_1=$1  in yard_start_1}
 
-yard_exp_brackets_1 :  yard_exp_brackets_2 Ident
+yard_exp_brackets_1 :  yard_exp_brackets_3 Ident
                         { let aae=$1  in let aaf=$2  in (aae,aaf)}
 
-yard_exp_brackets_2 :  yard_exp_brackets_3 Kw_from { let aad=$1  in aad}
+yard_exp_brackets_3 :  yard_exp_brackets_6 Kw_from { let aad=$1  in aad}
 
-yard_exp_brackets_3 :  Kw_select SqlExpression { let aac=$2  in aac}
+yard_exp_brackets_6 :  Kw_select SqlExpression { let aac=$2  in aac}
 

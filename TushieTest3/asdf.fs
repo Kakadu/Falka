@@ -36,8 +36,8 @@ type nonTerminalId =
     | NONTERM_SqlExpression
     | NONTERM_yard_start_1
     | NONTERM_yard_exp_brackets_1
-    | NONTERM_yard_exp_brackets_2
     | NONTERM_yard_exp_brackets_3
+    | NONTERM_yard_exp_brackets_6
 
 // This function maps tokens to integers indexes
 let tagOfToken (t:token) = 
@@ -66,8 +66,8 @@ let prodIdxToNonTerminal (prodIdx:int) =
     | 2 -> NONTERM_SqlExpression 
     | 3 -> NONTERM_yard_start_1 
     | 4 -> NONTERM_yard_exp_brackets_1 
-    | 5 -> NONTERM_yard_exp_brackets_2 
-    | 6 -> NONTERM_yard_exp_brackets_3 
+    | 5 -> NONTERM_yard_exp_brackets_3 
+    | 6 -> NONTERM_yard_exp_brackets_6 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
 let _fsyacc_endOfInputTag = 6 
@@ -144,7 +144,7 @@ let _fsyacc_reductions ()  =    [|
                  : 'a));
 # 145 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'yard_exp_brackets_2)) in
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'yard_exp_brackets_3)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -156,7 +156,7 @@ let _fsyacc_reductions ()  =    [|
                  : 'yard_exp_brackets_1));
 # 157 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'yard_exp_brackets_3)) in
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'yard_exp_brackets_6)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -165,7 +165,7 @@ let _fsyacc_reductions ()  =    [|
                                                                           let aad=_1  in aad
                    )
 # 32 "asdf.fsy"
-                 : 'yard_exp_brackets_2));
+                 : 'yard_exp_brackets_3));
 # 169 "asdf.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
@@ -177,7 +177,7 @@ let _fsyacc_reductions ()  =    [|
                                                                       let aac=_2  in aac
                    )
 # 34 "asdf.fsy"
-                 : 'yard_exp_brackets_3));
+                 : 'yard_exp_brackets_6));
 |]
 # 182 "asdf.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
