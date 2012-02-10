@@ -7,9 +7,8 @@ open Falka.Utils
 open Microsoft.FSharp.Quotations
 
 let (dllname, nsname, classname, workdir) = 
-  //(@"Test.dll", @"Test", @"parser1")
-  //(@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
-  (@"Test.dll", @"Test3.Parser", @"InnerParser", @"..\..\..\TushieTest3")
+  (@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
+  //(@"Test.dll", @"Test3.Parser", @"InnerParser", @"..\..\..\TushieTest3")
 let doescompile = false
 let (innerParser: System.Type, parserAttribute) =
   let dll = Assembly.LoadFrom dllname
@@ -140,4 +139,4 @@ let () =
   else
     printfn "Error while executing FsYacc"
 
-//let _ = System.Console.ReadKey ()
+let _ = System.Console.ReadKey ()

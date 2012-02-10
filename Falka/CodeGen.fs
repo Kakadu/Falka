@@ -47,7 +47,7 @@ let getSource (nsname,classname) (startRule,yaccStartRuleName) killedRules usedT
   fprintfn h "      then failwith \"fuck! stream is empty\""
   fprintfn h "      else"
   fprintfn h "        let ans = (!curstream).peek ()"
-  fprintfn h "        let ans = "
+  fprintfn h "        let ans ="
   fprintfn h "          match wrapToken ans with"
   fprintfn h "          | Some ans ->"
   fprintfn h "              curstream := (!curstream).tail ()"

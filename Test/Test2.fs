@@ -53,7 +53,6 @@ type innerLexer (lst : token list) = class
   override this.ToString () = lst.ToString ()
 end
 
-open Test
 open Microsoft.FSharp.Compiler.Reflection
 open Falka.Comb
 
@@ -91,7 +90,6 @@ type InnerParser () = class
 *)
   abstract member Expression: ITokenLexer<token> -> Result<ast,token>
   [<ParserFunction>]
-  [<ReflectedDefinition>]
   default this.Expression stream =
     let body = 
         (pipe3 this.Number this.Operator this.Expression (fun a op c -> AExpr (op, ANumber a,c)))
@@ -100,7 +98,6 @@ type InnerParser () = class
   
   abstract member Start: ITokenLexer<token> -> Result<ast,token>
 //  [<ParserFunction>]
-//  [<ReflectedDefinition>]
   default this.Start stream =
     let body = this.Expression .>> this.EOF
     wrap_meth stream body

@@ -6,6 +6,10 @@ open Microsoft.FSharp.Compiler.Reflection
 let wrapToken: Test3.Lexer.token -> GeneratedParser.Yacc.token option = function
   | Test3.Lexer.KW_SELECT x ->  Some (GeneratedParser.Yacc.Kw_select x)
   | Test3.Lexer.KW_FROM x ->  Some (GeneratedParser.Yacc.Kw_from x)
+  | Test3.Lexer.LPAREN x ->  Some (GeneratedParser.Yacc.Lparen x)
+  | Test3.Lexer.RPAREN x ->  Some (GeneratedParser.Yacc.Rparen x)
+  | Test3.Lexer.GLOBALVAR x ->  Some (GeneratedParser.Yacc.Globalvar x)
+  | Test3.Lexer.LOCALVAR x ->  Some (GeneratedParser.Yacc.Localvar x)
   | Test3.Lexer.IDENT x ->  Some (GeneratedParser.Yacc.Ident x)
   | _ -> None
 

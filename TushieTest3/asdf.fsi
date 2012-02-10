@@ -2,12 +2,20 @@
 module GeneratedParser.Yacc
 type token = 
   | Ident of (string)
+  | Localvar of (string)
+  | Globalvar of (string)
+  | Rparen of (string)
   | EOF of (string)
+  | Lparen of (string)
   | Kw_from of (string)
   | Kw_select of (string)
 type tokenId = 
     | TOKEN_Ident
+    | TOKEN_Localvar
+    | TOKEN_Globalvar
+    | TOKEN_Rparen
     | TOKEN_EOF
+    | TOKEN_Lparen
     | TOKEN_Kw_from
     | TOKEN_Kw_select
     | TOKEN_end_of_input
@@ -17,8 +25,9 @@ type nonTerminalId =
     | NONTERM_SqlExpression
     | NONTERM_yard_start_1
     | NONTERM_yard_exp_brackets_1
-    | NONTERM_yard_exp_brackets_3
-    | NONTERM_yard_exp_brackets_6
+    | NONTERM_yard_exp_brackets_2
+    | NONTERM_yard_exp_brackets_4
+    | NONTERM_yard_exp_brackets_7
 /// This function maps integers indexes to symbolic token ids
 val tagOfToken: token -> int
 

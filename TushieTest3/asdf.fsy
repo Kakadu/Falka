@@ -11,7 +11,11 @@ open Microsoft.FSharp.Compiler.Reflection
 %}
 %token <string> Kw_select
 %token <string> Kw_from
+%token <string> Lparen
 %token <string> EOF
+%token <string> Rparen
+%token <string> Globalvar
+%token <string> Localvar
 %token <string> Ident
 
 %start yard_start_1
@@ -21,15 +25,20 @@ open Microsoft.FSharp.Compiler.Reflection
 %%
 
 SqlExpression :  Ident { let aaa=$1  in (fun s -> AIdent(s)) aaa}
-                | yard_exp_brackets_1
-                  { let aab=$1  in (fun (e, where) -> ASelect(e, AIdent(where))) aab}
+                | Localvar { let aab=$1  in (fun s -> ALocalVar(s)) aab}
+                | Globalvar { let aac=$1  in (fun s -> AGlobalVar(s)) aac}
+                | yard_exp_brackets_1 Rparen { let aae=$1  in aae}
+                | yard_exp_brackets_2
+                  { let aaf=$1  in (fun (e, where) -> ASelect(e, AIdent(where))) aaf}
 
 yard_start_1 :  SqlExpression EOF { let yard_start_1=$1  in yard_start_1}
 
-yard_exp_brackets_1 :  yard_exp_brackets_3 Ident
-                        { let aae=$1  in let aaf=$2  in (aae,aaf)}
+yard_exp_brackets_1 :  Lparen SqlExpression { let aad=$2  in aad}
 
-yard_exp_brackets_3 :  yard_exp_brackets_6 Kw_from { let aad=$1  in aad}
+yard_exp_brackets_2 :  yard_exp_brackets_4 Ident
+                        { let aai=$1  in let aaj=$2  in (aai,aaj)}
 
-yard_exp_brackets_6 :  Kw_select SqlExpression { let aac=$2  in aac}
+yard_exp_brackets_4 :  yard_exp_brackets_7 Kw_from { let aah=$1  in aah}
+
+yard_exp_brackets_7 :  Kw_select SqlExpression { let aag=$2  in aag}
 

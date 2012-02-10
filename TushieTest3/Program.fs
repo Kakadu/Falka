@@ -27,3 +27,5 @@ let test3 () =
   | Failed s        -> printfn "failed: %A" s
 
 let () = test3 ()
+
+let _ = System.Console.ReadLine()

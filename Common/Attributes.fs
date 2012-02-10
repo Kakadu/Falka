@@ -18,18 +18,8 @@ type LexerCombinatorAttribute(tokenName: string, tokenType: string) =
     member this.TokenType = tokenType
     override this.ToString() = sprintf "(%s,%s)" tokenName  tokenType
 
-type ParserFunctionAttribute () =
-    inherit System.Attribute()
-(*
-type GLRAttribute () = 
-    inherit ParserFunctionAttribute()
+type ParserFunctionAttribute = ReflectedDefinitionAttribute
 
-type LALRAttribute () = 
-    inherit ParserFunctionAttribute()
-
-type RecDesAttribute () = 
-    inherit ParserFunctionAttribute()
-*)
 let isParserFunction (mem: System.Reflection.MemberInfo) =
   let attrs = mem.GetCustomAttributes false
   attrs |> Array.fold (fun acc x ->
