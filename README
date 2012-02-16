@@ -7,3 +7,12 @@ Maybe using this new parser will speedup parsing.
 An internal realization of grammar types was adopted from project 
 [Recursive-ascent](http://code.google.com/p/recursive-ascent/).
 It is a tool similar to yacc but with more features.
+
+Test  directory contains parsers which use parser-combintaors (Test2 and Test3)
+	  modules
+Falka contains analyzer of parser-functions' bodies and codegenarator of 
+      FsYacc's realizations of some parser-functions.
+TushieTest3, TushieTest
+      in this directories Falka puts generated source code. Use them to test 
+      generated parsers. (TushieTest is directory for Test2).
+
