@@ -94,3 +94,23 @@ module Codegen =
     )
  
 //let _ = Codegen.codegen3 "Lexer.token"
+let test4 () =
+  let t = new Test4.innerTokenizer ()
+  let tokens =
+    run_fparsec t.run "1+2*3" (fun (x,_,_) -> x)
+                (fun (msg,_,_) ->
+                  printfn "Failed tokenization. %s" msg
+                  failwith msg)
+  let tokens = tokens @ [Test4.EOF ""]
+  let p = new Test4.InnerParser ()
+  let lexer = new Test4.innerLexer (tokens)
+  let ans = p.Start2_call lexer
+  let () =
+    match ans with
+    | Success (ans, tail) ->
+        printfn "ans = %A" ans
+        printfn "tail = %A" tail
+    | Failed s -> printfn "Parsing failed: %s\n" s
+  ()
+
+let () = test4 ()

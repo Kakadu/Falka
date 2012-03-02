@@ -18,7 +18,7 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;falka</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
@@ -39,6 +39,7 @@
     <None Include="Lexer.fsl" />
     <Compile Include="Lexer.fs" />
     <Compile Include="Test3.fs" />
+    <Compile Include="Test4.fs" />
     <Compile Include="trash.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +51,9 @@
     </Reference>
     <Reference Include="FSharp.PowerPack">
       <HintPath>..\dlls\FSharp.PowerPack.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.PowerPack.Linq">
+      <HintPath>..\dlls\FSharp.PowerPack.Linq.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
