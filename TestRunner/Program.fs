@@ -18,15 +18,22 @@ let test2 () =
                   failwith msg)
   let p = new Test2.InnerParser ()
   let lexer = new Test2.innerLexer (tokens)
+  let dt1 = System.DateTime.Now 
   let ans = p.Expression lexer
+  let dt2 = System.DateTime.Now
   let () = 
     match ans with
     | Success (ans, tail) ->
         printfn "ans = %A" ans
         printfn "tail = %A" tail
+        let delta = dt2 - dt1
+        printfn "delta = %A" delta
     | Failed s -> printfn "Parsing failed: %s\n" s
   ()
+let () = test2 ()
 
+
+(*
 open Test3
 let test3 () =
   let test1 = "create function fun1 begin select a from b end"
@@ -114,3 +121,4 @@ let test4 () =
   ()
 
 let () = test4 ()
+*)

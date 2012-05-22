@@ -29,7 +29,7 @@ let print (filename: string) tokenType gr =
   File.WriteAllLines(filename, [s])
 
 open System.Diagnostics
-let fsyacccmd = @"D:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
+let fsyacccmd = @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
 let runFsYacc moduleName _ filename =
   let args = sprintf "--module %s %s" moduleName filename
   let p = new Process ()

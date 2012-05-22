@@ -7,8 +7,8 @@ open Falka.Utils
 open Microsoft.FSharp.Quotations
 
 let (dllname, nsname, classname, workdir) = 
-  //(@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
-  (@"Test.dll", @"Test3.Parser", @"InnerParser", @"..\..\..\TushieTest3")
+  (@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
+  //(@"Test.dll", @"Test3.Parser", @"InnerParser", @"..\..\..\TushieTest3")
 let doescompile = false
 let (innerParser: System.Type, parserAttribute) =
   let dll = Assembly.LoadFrom dllname
