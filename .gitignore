@@ -1,3 +1,5 @@
+*.user
+_ReSharper*
 *.osm
 bin
 obj

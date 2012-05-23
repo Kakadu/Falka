@@ -13,22 +13,24 @@ type innerTokenizer () = class
   member this.eof :Parser<token,unit> = 
     fun _ -> 
       new Reply<_>(EOF "")
-  member this.number = pfloat |>> (fun x -> NUMBER x)
+  member this.number = pfloat |>> fun x -> NUMBER x
   member this.operator = 
-    let f x : token = token.OPERATOR ((string)x)
+    let f x : token = token.OPERATOR <| string x
     (pchar '+' <|> pchar '-' <|> pchar '*' <|> pchar '/') |>> f
-  member this.run  : Parser<_,unit> = (many (this.operator <|> this.number))  .>> this.eof
+  member this.run  : Parser<_,unit> = 
+    //printfn "JOPA"
+    (this.operator <|> this.number) |> many   .>> this.eof
 end
 
 open Falka.Comb
-type innerLexer (lst : token list) = class
+type innerLexer (pos:int, lst : ResizeArray<token>) = class
   interface ITokenLexer<token> with
-    member this.is_empty () = List.isEmpty lst
-    member this.peek () = List.head lst
+    member this.is_empty () = (ResizeArray.length lst <= pos)
+    member this.peek () = lst.[pos]
     member this.tail () =
-      if List.length lst = 1 && List.head lst = EOF ""
-      then new innerLexer (lst) :> ITokenLexer<token>
-      else new innerLexer (List.tail lst) :> ITokenLexer<token>
+      if lst.[pos] = EOF "" && (ResizeArray.length lst = pos+1)
+      then new innerLexer (pos,lst) :> ITokenLexer<token>
+      else new innerLexer (pos+1,lst) :> ITokenLexer<token>
   (* next members will be invoked via Dynamic *)
   member this.number () : Result<float, token> =
     let o = this :> ITokenLexer<token>
@@ -37,7 +39,6 @@ type innerLexer (lst : token list) = class
     else match o.peek () with
          | NUMBER x -> Success (x, o.tail ())
          | _ -> Failed "cant parse number"
-
   member this.operator () : Result<string, token> =
     let o = this :> ITokenLexer<token>
     if o.is_empty ()

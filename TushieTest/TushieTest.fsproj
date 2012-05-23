@@ -15,8 +15,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
     <OutputPath>.</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -47,11 +47,6 @@
     <ProjectReference Include="..\Common\FalkaCommon.fsproj">
       <Name>FalkaCommon</Name>
       <Project>{05806d3f-2dc4-4a4e-8003-173363936fe0}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\TestRunner\TestRunner.fsproj">
-      <Name>TestRunner</Name>
-      <Project>{445a03f2-6a31-4a90-9f73-6e792f22fca3}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Test\Test.fsproj">
