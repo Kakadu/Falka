@@ -1,5 +1,9 @@
 ﻿module EngineHelpers
 
+(* Some helper functions to access F# AST
+ * 
+ *)
+
 open System.Reflection
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns

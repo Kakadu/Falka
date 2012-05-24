@@ -1,5 +1,9 @@
 ﻿module CodeGen
 
+(* This modules generates code to connect parser-combinators with generated FsYacc parser
+ * 
+ *)
+
 open Printf
 open System
 open System.IO

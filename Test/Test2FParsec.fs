@@ -6,10 +6,10 @@ type ast =
   | ANumber of int
   | AExpr of string * ast * ast
 
-let (expr:Parser<ast,unit> ,exprImpl) = createParserForwardedToRef ()
-let op = (pchar '+' <|> pchar '*')
+let (expr:Parser<ast,unit>, exprImpl) = createParserForwardedToRef ()
+let op = pchar '+' <|> pchar '*'
 let expr_helper = 
-     ((followedBy (pint32 .>>. op))  >>. (pint32 .>>. op .>>. expr) )
+     ((followedBy (pint32 >>. op))  >>. (pint32 .>>. op .>>. expr) )
        |>> (fun ((l,r),z) -> AExpr (string r,ANumber l,z))     
      <|>
      (pint32 |>> fun x -> ANumber x)

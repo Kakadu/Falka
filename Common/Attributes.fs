@@ -1,7 +1,11 @@
 ﻿module Falka.Attributes
-open Falka.Utils
 
-//type parserStrategy = GLR | LALR | RecDes
+(* 
+ * Using this attributes you can specify information about grammar in a parser class
+ * where parser-functions are located.
+ *)
+
+open Falka.Utils
 
 type ParserClassAttribute (start: string, tokenNamespace:string, extraNamespaces: string) =
     inherit System.Attribute()

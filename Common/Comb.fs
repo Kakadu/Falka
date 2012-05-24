@@ -39,7 +39,7 @@ let (.>>.) (p1: Parser<'t,'r>) (p2: Parser<'t,'u>) : Parser<'t,'r*'u> = fun lst 
 
 let (<|>) (p1: Parser<'t,'u>) (p2: Parser<'t,'u>) : Parser<'t,'u> = fun lst ->
   match p1 lst with
-  | Success (a,b) as ans -> ans
+  | Success _ as ans -> ans
   | Failed _ -> 
       match p2 lst with
       | Success _ as ans -> ans

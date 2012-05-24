@@ -1,4 +1,9 @@
 ﻿module Falka.Engine
+(* 
+ * This module analyzes methods modies and builds Yard grammar.
+ *)
+
+
 open System.Reflection
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns

@@ -1,4 +1,10 @@
-﻿module Falka.Main
+﻿(**
+ * This code analyzes input DLL and bodies of parser-functions,
+ * builds Yard grammar and executes FsYacc
+ *)
+
+module Falka.Main
+
 open Falka
 open Printf
 open System.Reflection
@@ -6,9 +12,13 @@ open Falka.Attributes
 open Falka.Utils
 open Microsoft.FSharp.Quotations
 
-let (dllname, nsname, classname, workdir) = 
+let (dllname,   (* DLL where parser located *)
+     nsname,    (* Namespace where to look for parser *) 
+     classname, (* class with parser functions *)
+     workdir    (* where to put generated files *) ) = 
   (@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
   //(@"Test.dll", @"Test3.Parser", @"InnerParser", @"..\..\..\TushieTest3")
+
 let doescompile = false
 let (innerParser: System.Type, parserAttribute) =
   let dll = Assembly.LoadFrom dllname
