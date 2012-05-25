@@ -16,7 +16,7 @@ open Falka.Comb
 
 let input = 
   let mutable ans = "9+8*3+1*4"
-  let n = 10
+  let n = 9
   for i=1 to n do
     ans <-  ans + "+" + ans
   done
