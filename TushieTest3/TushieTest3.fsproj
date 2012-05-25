@@ -38,9 +38,9 @@
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <ItemGroup>
     <None Include="gr.yrd" />
-    <None Include="asdf.fsy" />
-    <Compile Include="asdf.fsi" />
-    <Compile Include="asdf.fs" />
+    <None Include="HybridParser.fsy" />
+    <Compile Include="HybridParser.fsi" />
+    <Compile Include="HybridParser.fs" />
     <Compile Include="Tushie.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

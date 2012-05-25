@@ -16,8 +16,9 @@ let (dllname,   (* DLL where parser located *)
      nsname,    (* Namespace where to look for parser *) 
      classname, (* class with parser functions *)
      workdir    (* where to put generated files *) ) = 
-  (ref @"Test.dll", ref @"Test2", ref @"InnerParser", ref @"..\..\..\TushieTest")
-  //(ref @"Test.dll", ref @"Test3.Parser", ref @"InnerParser", ref @"..\..\..\TushieTest3")
+  //(ref @"Test.dll", ref @"Test2", ref @"InnerParser", ref @"..\..\..\TushieTest")
+  (ref @"Test.dll", ref @"Test3.Parser", ref @"InnerParser", ref @"..\..\..\TushieTest3")
+let outYaccFilePrefix = "HybridParser"
 
 let () = 
   let specs = 
@@ -130,7 +131,7 @@ let (yaccStartRuleName, usedTokens) =
     match getTokeType tname with
     | Some x -> x
     | None  -> failwith (sprintf "Token type is not specified for token %s" tname)
-  FsYacc.print "asdf.fsy" tokenTyper definition
+  FsYacc.print (outYaccFilePrefix + ".fsy") tokenTyper definition
   (startRuleName,usedTokens)
 
 let () =
@@ -144,7 +145,7 @@ let evalNewAssembly (asm: Assembly) =
   ()
 
 let () =
-  if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname "asdf.fsy"
+  if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname (outYaccFilePrefix + ".fsy")
   then
     let rules2kill = []
     //TODO: rules to kill are such rules which are used inside of startRule
@@ -158,4 +159,4 @@ let () =
   else
     printfn "Error while executing FsYacc"
 
-let _ = System.Console.ReadKey ()
+//let _ = System.Console.ReadKey ()

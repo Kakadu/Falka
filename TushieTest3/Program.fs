@@ -27,7 +27,7 @@ let test3 () =
   let p = new GeneratedParser.Parser.InnerParser ()
   let lexer = new Test3.Parser.innerLexer (lst)
   match p.CreateFunction lexer with
-  | Success (ans,_) -> printfn "Succed: result = %A" ans
+  | Success (ans,_) -> printfn "Succeded: result = %A" ans
   | Failed s        -> printfn "failed: %A" s
 
 let () = test3 ()

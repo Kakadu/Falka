@@ -62,7 +62,7 @@ let getSource (nsname,classname) (startRule,yaccStartRuleName) killedRules usedT
   fprintfn h "              curstream := (!curstream).tail ()"
   fprintfn h "              ans"
   fprintfn h "          | None     -> GeneratedParser.Yacc.EOF \"\""
-  fprintfn h "        Printf.printfn \"ans = %%A\" ans"
+//  fprintfn h "        Printf.printfn \"ans = %%A\" ans"
   fprintfn h "        lexbuf.StartPos <- Position.FirstLine(\"%s\")" "filename"
   fprintfn h "        lexbuf.EndPos <- lexbuf.StartPos.EndOfToken(1)"
   fprintfn h "        ans"
