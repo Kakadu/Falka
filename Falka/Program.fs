@@ -16,14 +16,23 @@ let (dllname,   (* DLL where parser located *)
      nsname,    (* Namespace where to look for parser *) 
      classname, (* class with parser functions *)
      workdir    (* where to put generated files *) ) = 
-  (@"Test.dll", @"Test2", @"InnerParser", @"..\..\..\TushieTest")
-  //(@"Test.dll", @"Test3.Parser", @"InnerParser", @"..\..\..\TushieTest3")
+  (ref @"Test.dll", ref @"Test2", ref @"InnerParser", ref @"..\..\..\TushieTest")
+  //(ref @"Test.dll", ref @"Test3.Parser", ref @"InnerParser", ref @"..\..\..\TushieTest3")
+
+let () = 
+  let specs = 
+    ["--dll",   ArgType.String ((:=)dllname), "filename of DLL";
+     "--ns",    ArgType.String ((:=)nsname),  "Namespace where to look for parser class";
+     "--class", ArgType.String ((:=)classname),  "parser class's name";
+     "--pwd"  , ArgType.String ((:=)workdir),  "where to put generated files";
+    ] |> List.map (fun (sh, ty, desc) -> ArgInfo(sh, ty, desc))
+  ArgParser.Parse(specs, fun s -> printfn "wrong argument %s" s)
 
 let doescompile = false
 let (innerParser: System.Type, parserAttribute) =
-  let dll = Assembly.LoadFrom dllname
-  let rootns = dll.GetType nsname
-  let _inn : MemberInfo [] = rootns.GetMember classname
+  let dll = Assembly.LoadFrom !dllname
+  let rootns = dll.GetType !nsname
+  let _inn : MemberInfo [] = rootns.GetMember !classname
   let parser = _inn.GetValue 0 :?> System.Type
   match isParserClass parser with
   | Some attr -> (parser, attr)
@@ -80,14 +89,14 @@ let opens =
   Seq.append 
     extraNamespaces
     [ tokenNamespace
-      ; nsname
+      ; !nsname
       ; "Microsoft.FSharp.Quotations"
       ; "Microsoft.FSharp.Quotations.Patterns"
       ; "Microsoft.FSharp.Compiler"
       ; "Microsoft.FSharp.Compiler.Reflection"
     ] |> seq
 
-let () = System.IO.Directory.SetCurrentDirectory workdir
+let () = System.IO.Directory.SetCurrentDirectory !workdir
 
 let (yaccStartRuleName, usedTokens) =
   let rules = List.map (Engine.eval startRuleName isTokenRule) methods
@@ -139,10 +148,10 @@ let () =
   then
     let rules2kill = []
     //TODO: rules to kill are such rules which are used inside of startRule
-    CodeGen.getSource (nsname,classname) (startRuleName,yaccStartRuleName) rules2kill usedTokens (tokenNamespace,tokensData)
+    CodeGen.getSource (!nsname,!classname) (startRuleName,yaccStartRuleName) rules2kill usedTokens (tokenNamespace,tokensData)
     if doescompile
     then
-      match CodeGen.compile (dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with
+      match CodeGen.compile (!dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with
       | Some x when x <> null -> evalNewAssembly x
       | _ -> printfn "Failed to compile new class"
     else ()
