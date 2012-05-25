@@ -12,7 +12,7 @@ open System.CodeDom.Compiler
 open System.Reflection
 
 let outAssembly = @"Tushie.dll"
-let tempFileName = @"Tushie.fs"
+let tempFileName = @"HybridCaller.fs"
 let newModule = @"GeneratedParser.Parser"
 
 let referencedAssemblies = 

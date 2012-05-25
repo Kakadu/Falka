@@ -41,7 +41,7 @@
     <None Include="HybridParser.fsy" />
     <Compile Include="HybridParser.fsi" />
     <Compile Include="HybridParser.fs" />
-    <Compile Include="Tushie.fs" />
+    <Compile Include="HybridCaller.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
