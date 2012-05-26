@@ -23,15 +23,19 @@ let doCompilation = false
 let fsyacccmd = ref @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
 
 let () = 
-  let specs = 
+  let rec specs = 
     ["--dll",    ArgType.String ((:=)dllname), "filename of DLL";
      "--ns",     ArgType.String ((:=)nsname),  "Namespace where to look for parser class";
      "--class",  ArgType.String ((:=)classname),  "parser class's name";
      "--pwd"  ,  ArgType.String ((:=)workdir),  "where to put generated files";
-     "--fsyacc", ArgType.String ((:=)fsyacccmd), "fsyacc executable"
+     "--fsyacc", ArgType.String ((:=)fsyacccmd), "fsyacc executable";
+     "-h", ArgType.Unit (fun () -> ArgParser.Usage (specs, "This is usage"); exit 0), "usage"
     ] |> List.map (fun (sh, ty, desc) -> ArgInfo(sh, ty, desc))
-  ArgParser.Parse(specs, fun s -> printfn "wrong argument %s" s)
-
+  let anon s = 
+    printfn "wrong argument %s" s
+    ArgParser.Usage (specs, "This is usage")
+  ArgParser.Parse(specs, anon)
+  
 let (innerParser: System.Type, parserAttribute) =
   let dll = Assembly.LoadFrom !dllname
   let rootns = dll.GetType !nsname
