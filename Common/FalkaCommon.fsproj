@@ -36,12 +36,6 @@
     <DocumentationFile>bin\Release\Common.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FParsec">
-      <HintPath>..\dlls\FParsec.dll</HintPath>
-    </Reference>
-    <Reference Include="FParsecCS">
-      <HintPath>..\dlls\FParsecCS.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.PowerPack">
       <HintPath>..\dlls\FSharp.PowerPack.dll</HintPath>
     </Reference>

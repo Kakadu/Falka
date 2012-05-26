@@ -16,8 +16,8 @@ let (dllname,   (* DLL where parser located *)
      nsname,    (* Namespace where to look for parser *) 
      classname, (* class with parser functions *)
      workdir    (* where to put generated files *) ) = 
-  (ref @"Test.dll", ref @"Test2", ref @"InnerParser", ref @"..\..\..\TushieTest")
-  //(ref @"Test.dll", ref @"Test3.Parser", ref @"InnerParser", ref @"..\..\..\TushieTest3")
+  (ref @"Test.dll", ref @"Test2", ref @"InnerParser", ref @"..\..\..\HybridTest1")
+  //(ref @"Test.dll", ref @"Test3.Parser", ref @"InnerParser", ref @"..\..\..\HybridTest2")
 let outYaccFilePrefix = "HybridParser"
 
 let () = 

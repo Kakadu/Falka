@@ -58,13 +58,3 @@ let isParserClass (mem: System.Reflection.MemberInfo) =
     | _ ->
        printfn "It seems that class %s has more than 1 ParserClassAttribute" mem.Name
        None
-  
-let filter_map f xs = 
-  let acc = ref []
-  xs |> Array.iter (fun x ->
-    match f x with
-    | Some y -> acc := y :: !acc
-    | None -> ()
-  )
-  acc
-

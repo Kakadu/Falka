@@ -53,7 +53,7 @@ let getSource (nsname,classname) (startRule,yaccStartRuleName) killedRules usedT
   fprintfn h "    let curstream = ref stream"
   fprintfn h "    let tokenizer (lexbuf: LexBuffer<_>) ="
   fprintfn h "      if (!curstream).is_empty ()"
-  fprintfn h "      then failwith \"fuck! stream is empty\""
+  fprintfn h "      then failwith \"Epic fail: stream is empty. Do yo have EOF token in your parser?\""
   fprintfn h "      else"
   fprintfn h "        let ans = (!curstream).peek ()"
   fprintfn h "        let ans ="
