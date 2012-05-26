@@ -19,17 +19,19 @@ let (dllname,   (* DLL where parser located *)
   (ref @"Test.dll", ref @"Test2", ref @"InnerParser", ref @"..\..\..\HybridTest1")
   //(ref @"Test.dll", ref @"Test3.Parser", ref @"InnerParser", ref @"..\..\..\HybridTest2")
 let outYaccFilePrefix = "HybridParser"
+let doCompilation = false
+let fsyacccmd = ref @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
 
 let () = 
   let specs = 
-    ["--dll",   ArgType.String ((:=)dllname), "filename of DLL";
-     "--ns",    ArgType.String ((:=)nsname),  "Namespace where to look for parser class";
-     "--class", ArgType.String ((:=)classname),  "parser class's name";
-     "--pwd"  , ArgType.String ((:=)workdir),  "where to put generated files";
+    ["--dll",    ArgType.String ((:=)dllname), "filename of DLL";
+     "--ns",     ArgType.String ((:=)nsname),  "Namespace where to look for parser class";
+     "--class",  ArgType.String ((:=)classname),  "parser class's name";
+     "--pwd"  ,  ArgType.String ((:=)workdir),  "where to put generated files";
+     "--fsyacc", ArgType.String ((:=)fsyacccmd), "fsyacc executable"
     ] |> List.map (fun (sh, ty, desc) -> ArgInfo(sh, ty, desc))
   ArgParser.Parse(specs, fun s -> printfn "wrong argument %s" s)
 
-let doescompile = false
 let (innerParser: System.Type, parserAttribute) =
   let dll = Assembly.LoadFrom !dllname
   let rootns = dll.GetType !nsname
@@ -66,10 +68,8 @@ let getTokeType,isTokenRule =
   let isTokenRule s =
     tokensData
       |> Array.find_opt (fun (mi: MethodInfo,_) -> mi.Name.Equals(s)) 
-      //|> Option.map (fun (_,x) -> x.TokenName)
       |> Option.map (fun (mi,_) -> mi.Name)
   let getTokenType s =
-    // if token = A of string ans s=="A" returns `string`
     tokensData
     |> Array.find_opt (fun (mi,_) -> mi.Name.Equals(s))
     |> Option.map (fun (_,attr) -> attr.TokenType)
@@ -142,21 +142,20 @@ let evalNewAssembly (asm: Assembly) =
   let p = asm.GetType fullName
   p.GetMembers () |> Array.map (fun x -> x.ToString()) |> Array.iter (fun x-> printfn "%A" x)
   printfn "Ended"
-  ()
 
 let () =
-  if FsYacc.runFsYacc "GeneratedParser.Yacc" nsname (outYaccFilePrefix + ".fsy")
+  if FsYacc.runFsYacc !fsyacccmd "GeneratedParser.Yacc" nsname (outYaccFilePrefix + ".fsy")
   then
     let rules2kill = []
     //TODO: rules to kill are such rules which are used inside of startRule
     CodeGen.getSource (!nsname,!classname) (startRuleName,yaccStartRuleName) rules2kill usedTokens (tokenNamespace,tokensData)
-    if doescompile
+    if doCompilation
     then
       match CodeGen.compile (!dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with
       | Some x when x <> null -> evalNewAssembly x
-      | _ -> printfn "Failed to compile new class"
+      | _ -> printfn "Failed to compile generated parser"
     else ()
   else
     printfn "Error while executing FsYacc"
 
-//let _ = System.Console.ReadKey ()
+

@@ -29,8 +29,8 @@ let print (filename: string) tokenType gr =
   File.WriteAllLines(filename, [s])
 
 open System.Diagnostics
-let fsyacccmd = @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
-let runFsYacc moduleName _ filename =
+
+let runFsYacc fsyacccmd moduleName _ filename =
   let args = sprintf "--module %s %s" moduleName filename
   let p = new Process ()
   p.StartInfo.FileName <- fsyacccmd
@@ -38,14 +38,18 @@ let runFsYacc moduleName _ filename =
   p.StartInfo.UseShellExecute <- false
   p.StartInfo.RedirectStandardOutput <- true
   Printf.printfn "Executing commmand: `%s %s`..." fsyacccmd filename
-  let _ = p.Start ()
+  try
+    let _ = p.Start ()
 
-  let output = p.StandardOutput.ReadToEnd ()
-  p.WaitForExit ()  
-  if p.ExitCode<>0
-  then 
-    printfn "%s\n\n" output
+    let output = p.StandardOutput.ReadToEnd ()
+    p.WaitForExit ()  
+    if p.ExitCode<>0
+    then 
+      printfn "%s\n\n" output
+      false
+    else
+      printfn "FsYacc finised successfully"
+      true
+  with :? System.ComponentModel.Win32Exception as exn ->    
+    printfn "Exception while executing fsyacc: %s" exn.Message
     false
-  else
-    printfn "FsYacc finised successfully"
-    true
