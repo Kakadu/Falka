@@ -19,7 +19,7 @@ open Microsoft.FSharp.Compiler.Reflection
 type token = 
   | Number of (float)
   | Operator of (string)
-  | EOF of (string)
+  | EOF of (unit)
 // This type is used to give symbolic names to token indexes, useful for error messages
 type tokenId = 
     | TOKEN_Number
@@ -122,7 +122,7 @@ let _fsyacc_reductions ()  =    [|
 # 122 "HybridParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : unit)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (

@@ -10,14 +10,14 @@ type innerLexer (lst : token list) =
     member this.tail () = new innerLexer (List.tail lst) :> ITokenLexer<token>
   override this.ToString () = lst.ToString ()
   (* next members will be invoked via Dynamic *)
-  member this.eof (): Result<string,Lexer.token> =
+  member this.eof (): Result<unit,Lexer.token> =
     let o = this :> ITokenLexer<Lexer.token>
     if o.is_empty ()
     then Failed "input is empty"
     else 
       let el = o.peek()
       match el with
-         | EOF x -> Success (x, o.tail())
+         | EOF  -> Success ((), o.tail())
          | _    -> Failed (sprintf "cant parse EOF. %A is on then top" el)
 
   member this.kw_create (): Result<string,Lexer.token> =
@@ -295,9 +295,9 @@ module Ast =
 
 [<ParserClassAttribute("SqlExpression", "Test3.Lexer", "Test3.Parser.Ast")>]
 type InnerParser () = 
-  [<LexerCombinator("EOF","string")>]
-  member this.EOF stream : Result<string, token> =
-    (stream?eof : unit -> Result<string,token>) ()
+  [<LexerCombinator("EOF","unit")>]
+  member this.EOF stream : Result<unit, token> =
+    (stream?eof : unit -> Result<unit,token>) ()
   [<LexerCombinator("KW_CREATE","string")>]
   member this.Kw_create stream : Result<string, token> =
     (stream?kw_create : unit -> Result<string,token>) ()

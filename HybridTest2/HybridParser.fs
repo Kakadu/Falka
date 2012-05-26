@@ -22,7 +22,7 @@ type token =
   | Localvar of (string)
   | Globalvar of (string)
   | Rparen of (string)
-  | EOF of (string)
+  | EOF of (unit)
   | Lparen of (string)
   | Kw_from of (string)
   | Kw_select of (string)
@@ -196,7 +196,7 @@ let _fsyacc_reductions ()  =    [|
 # 196 "HybridParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SqlExpression)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : unit)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (

@@ -13,7 +13,7 @@ let run_fparsec p str ok fail =
     match run p str with
     | Success (x,y,z) -> ok (x,y,z)
     | Failure (x,y,z) -> fail (x,y,z)
-(*
+
 open Falka.Comb
 let test2 () =
   let t = new Test2.innerTokenizer ()
@@ -23,7 +23,7 @@ let test2 () =
                   printfn "Failed tokenization. %s" msg
                   failwith msg)
   let p = new Test2.InnerParser ()
-  let lexer = new Test2.innerLexer (tokens)
+  let lexer = new Test2.innerLexer (0, ResizeArray.ofList tokens)
   let dt1 = System.DateTime.Now 
   let ans = p.Expression lexer
   let dt2 = System.DateTime.Now
@@ -37,7 +37,7 @@ let test2 () =
     | Failed s -> printfn "Parsing failed: %s\n" s
   ()
 let () = test2 ()
-*)
+
 
 (*
 open Test3

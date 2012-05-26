@@ -16,8 +16,11 @@ let (dllname,   (* DLL where parser located *)
      nsname,    (* Namespace where to look for parser *) 
      classname, (* class with parser functions *)
      workdir    (* where to put generated files *) ) = 
+  // простая арифметика
   (ref @"Test.dll", ref @"Test2", ref @"InnerParser", ref @"..\..\..\HybridTest1")
+  // язык а ля SQL
   //(ref @"Test.dll", ref @"Test3.Parser", ref @"InnerParser", ref @"..\..\..\HybridTest2")
+
 let outYaccFilePrefix = "HybridParser"
 let doCompilation = false
 let fsyacccmd = ref @"C:\Program Files\FSharpPowerPack-2.0.0.0\bin\fsyacc.exe"
@@ -153,6 +156,7 @@ let () =
     let rules2kill = []
     //TODO: rules to kill are such rules which are used inside of startRule
     CodeGen.getSource (!nsname,!classname) (startRuleName,yaccStartRuleName) rules2kill usedTokens (tokenNamespace,tokensData)
+    printfn "output code generated"
     if doCompilation
     then
       match CodeGen.compile (!dllname,nsname,classname) ["asdf.fsi"; "asdf.fs"; CodeGen.tempFileName] with

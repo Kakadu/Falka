@@ -4,7 +4,7 @@
 type token =
   | NUMBER of float
   | OPERATOR of string
-  | EOF of string
+  | EOF 
 
 
 open FParsec
@@ -12,7 +12,7 @@ open FParsec
 type innerTokenizer () = class
   member this.eof :Parser<token,unit> = 
     fun _ -> 
-      new Reply<_>(EOF "")
+      new Reply<_>(EOF)
   member this.number = pfloat |>> fun x -> NUMBER x
   member this.operator = 
     let f x : token = token.OPERATOR <| string x
@@ -28,7 +28,7 @@ type innerLexer (pos:int, lst : ResizeArray<token>) = class
     member this.is_empty () = (ResizeArray.length lst <= pos)
     member this.peek () = lst.[pos]
     member this.tail () =
-      if lst.[pos] = EOF "" && (ResizeArray.length lst = pos+1)
+      if lst.[pos] = EOF  && (ResizeArray.length lst = pos+1)
       then new innerLexer (pos,lst) :> ITokenLexer<token>
       else new innerLexer (pos+1,lst) :> ITokenLexer<token>
   (* next members will be invoked via Dynamic *)
@@ -46,10 +46,10 @@ type innerLexer (pos:int, lst : ResizeArray<token>) = class
     else match o.peek () with
          | OPERATOR p -> Success (p, o.tail ())
          | _ -> Failed "cant parse operator"
-  member this.eof () : Result<string, token> =
+  member this.eof () : Result<unit, token> =
     let o = this :> ITokenLexer<token>
     match o.peek () with
-         | EOF p -> Success (p, o)
+         | EOF -> Success ((), o)
          | _ -> Failed "cant parse eof"
   override this.ToString () = lst.ToString ()
 end
@@ -75,9 +75,9 @@ type InnerParser () = class
   [<LexerCombinator("NUMBER","float")>]
   member this.Number stream : Result<float, token> =
     (stream?number : unit -> Result<float,token>) ()
-  [<LexerCombinator("EOF","string")>]
-  member this.EOF stream : Result<string, token> =
-    (stream?eof : unit -> Result<string,token>) ()
+  [<LexerCombinator("EOF","unit")>]
+  member this.EOF stream : Result<unit, token> =
+    (stream?eof : unit -> Result<unit,token>) ()
   [<LexerCombinator("OPERATOR","string")>]
   member this.Operator stream : Result<string, token> =
     (stream?operator : unit -> Result<string,token>) ()
@@ -98,7 +98,6 @@ type InnerParser () = class
     wrap_meth stream body
   
   abstract member Start: ITokenLexer<token> -> Result<ast,token>
-//  [<ParserFunction>]
   default this.Start stream =
     let body = this.Expression .>> this.EOF
     wrap_meth stream body

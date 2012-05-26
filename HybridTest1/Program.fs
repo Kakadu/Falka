@@ -32,7 +32,7 @@ let tokens =
                 (fun (msg,_,_) -> 
                   printfn "Failed tokenization. %s" msg
                   failwith msg)
-    |> (fun x -> x @ [Test2.EOF "" ]) 
+    |> (fun x -> x @ [Test2.EOF ]) 
     |> (fun lst -> ResizeArray.ofList lst)
 
 let () = 

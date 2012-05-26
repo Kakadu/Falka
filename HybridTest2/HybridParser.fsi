@@ -5,7 +5,7 @@ type token =
   | Localvar of (string)
   | Globalvar of (string)
   | Rparen of (string)
-  | EOF of (string)
+  | EOF of (unit)
   | Lparen of (string)
   | Kw_from of (string)
   | Kw_select of (string)

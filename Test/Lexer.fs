@@ -27,7 +27,7 @@ open Microsoft.FSharp.Text
 open Microsoft.FSharp.Reflection
 
 type token = 
-  | EOF of string
+  | EOF 
   | KW_CREATE of string
   | KW_FUNCTION of string
   | KW_RETURN   of string
@@ -53,6 +53,7 @@ type token =
   | LBRACKET of string
   | RBRACKET of string
   | SEMI of string
+
 let getKwToken (name: string) = 
     let s = name.ToLower()
     match s with
@@ -84,7 +85,7 @@ let makeIdent notKeyWord (name:string) =
   else if notKeyWord then IDENT name
   else getKwToken name
 
-# 87 "Lexer.fs"
+# 88 "Lexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -181,143 +182,143 @@ and multiline_comment  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _f
 and _fslex_tokens  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 106 "Lexer.fsl"
+# 107 "Lexer.fsl"
                                  tokens lexbuf 
-# 186 "Lexer.fs"
+# 187 "Lexer.fs"
           )
   | 1 -> ( 
-# 107 "Lexer.fsl"
+# 108 "Lexer.fsl"
                                  STRING_CONST (LexBuffer<_>.LexemeString(lexbuf)) 
-# 191 "Lexer.fs"
+# 192 "Lexer.fs"
           )
   | 2 -> ( 
-# 108 "Lexer.fsl"
+# 109 "Lexer.fsl"
                                  DEC_NUMBER   (LexBuffer<_>.LexemeString(lexbuf)) 
-# 196 "Lexer.fs"
+# 197 "Lexer.fs"
           )
   | 3 -> ( 
-# 109 "Lexer.fsl"
+# 110 "Lexer.fsl"
                                  tokens lexbuf 
-# 201 "Lexer.fs"
+# 202 "Lexer.fs"
           )
   | 4 -> ( 
-# 110 "Lexer.fsl"
+# 111 "Lexer.fsl"
                                  DOT "." 
-# 206 "Lexer.fs"
+# 207 "Lexer.fs"
           )
   | 5 -> ( 
-# 111 "Lexer.fsl"
+# 112 "Lexer.fsl"
                                  COMMA "," 
-# 211 "Lexer.fs"
+# 212 "Lexer.fs"
           )
   | 6 -> ( 
-# 112 "Lexer.fsl"
+# 113 "Lexer.fsl"
                                  OP_EQ "=" 
-# 216 "Lexer.fs"
+# 217 "Lexer.fs"
           )
   | 7 -> ( 
-# 113 "Lexer.fsl"
+# 114 "Lexer.fsl"
                                  SEMI ";" 
-# 221 "Lexer.fs"
+# 222 "Lexer.fs"
           )
   | 8 -> ( 
-# 114 "Lexer.fsl"
+# 115 "Lexer.fsl"
                                  LPAREN "(" 
-# 226 "Lexer.fs"
+# 227 "Lexer.fs"
           )
   | 9 -> ( 
-# 115 "Lexer.fsl"
+# 116 "Lexer.fsl"
                                  RPAREN ")" 
-# 231 "Lexer.fs"
+# 232 "Lexer.fs"
           )
   | 10 -> ( 
-# 116 "Lexer.fsl"
+# 117 "Lexer.fsl"
                                  LBRACKET "(" 
-# 236 "Lexer.fs"
+# 237 "Lexer.fs"
           )
   | 11 -> ( 
-# 117 "Lexer.fsl"
+# 118 "Lexer.fsl"
                                  RBRACKET "]" 
-# 241 "Lexer.fs"
+# 242 "Lexer.fs"
           )
   | 12 -> ( 
-# 118 "Lexer.fsl"
+# 119 "Lexer.fsl"
                                  OP_PLUS "+" 
-# 246 "Lexer.fs"
+# 247 "Lexer.fs"
           )
   | 13 -> ( 
-# 119 "Lexer.fsl"
+# 120 "Lexer.fsl"
                                  OP_MINUS "-" 
-# 251 "Lexer.fs"
+# 252 "Lexer.fs"
           )
   | 14 -> ( 
-# 120 "Lexer.fsl"
+# 121 "Lexer.fsl"
                            let l = LexBuffer<_>.LexemeString(lexbuf) in
                            makeIdent false l 
                         
-# 258 "Lexer.fs"
+# 259 "Lexer.fs"
           )
   | 15 -> ( 
-# 123 "Lexer.fsl"
+# 124 "Lexer.fsl"
                                         tokens lexbuf 
-# 263 "Lexer.fs"
+# 264 "Lexer.fs"
           )
   | 16 -> ( 
-# 124 "Lexer.fsl"
+# 125 "Lexer.fsl"
                          comment_depth := 1; clearBuf(); multiline_comment lexbuf 
-# 268 "Lexer.fs"
+# 269 "Lexer.fs"
           )
   | 17 -> ( 
-# 125 "Lexer.fsl"
-                         EOF "" 
-# 273 "Lexer.fs"
+# 126 "Lexer.fsl"
+                         EOF 
+# 274 "Lexer.fs"
           )
   | 18 -> ( 
-# 126 "Lexer.fsl"
+# 127 "Lexer.fsl"
                          failwith (sprintf "fucking shit received %s\n" (LexBuffer<_>.LexemeString(lexbuf)) ) 
-# 278 "Lexer.fs"
+# 279 "Lexer.fs"
           )
   | _ -> failwith "tokens"
 (* Rule multiline_comment *)
 and _fslex_multiline_comment  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 129 "Lexer.fsl"
+# 130 "Lexer.fsl"
                      incr comment_depth; appendBuf(LexBuffer<_>.LexemeString(lexbuf)); multiline_comment lexbuf
-# 287 "Lexer.fs"
+# 288 "Lexer.fs"
           )
   | 1 -> ( 
-# 131 "Lexer.fsl"
+# 132 "Lexer.fsl"
                      decr comment_depth; 
                      if !comment_depth = 0 then 
                        tokens lexbuf
                      else 
                        appendBuf(LexBuffer<_>.LexemeString(lexbuf)); multiline_comment lexbuf 
                    
-# 297 "Lexer.fs"
+# 298 "Lexer.fs"
           )
   | 2 -> ( 
-# 137 "Lexer.fsl"
+# 138 "Lexer.fsl"
                         lexbuf.EndPos <- lexbuf.EndPos.NextLine; appendBuf(LexBuffer<_>.LexemeString(lexbuf)); multiline_comment lexbuf 
-# 302 "Lexer.fs"
+# 303 "Lexer.fs"
           )
   | 3 -> ( 
-# 138 "Lexer.fsl"
+# 139 "Lexer.fsl"
                          failwith "unclosed comment in the end of file" 
-# 307 "Lexer.fs"
+# 308 "Lexer.fs"
           )
   | 4 -> ( 
-# 139 "Lexer.fsl"
+# 140 "Lexer.fsl"
                                             appendBuf(LexBuffer<_>.LexemeString(lexbuf)); multiline_comment lexbuf 
-# 312 "Lexer.fs"
+# 313 "Lexer.fs"
           )
   | 5 -> ( 
-# 140 "Lexer.fsl"
+# 141 "Lexer.fsl"
                        appendBuf(LexBuffer<_>.LexemeString(lexbuf)); multiline_comment lexbuf 
-# 317 "Lexer.fs"
+# 318 "Lexer.fs"
           )
   | _ -> failwith "multiline_comment"
 
-# 142 "Lexer.fsl"
+# 143 "Lexer.fsl"
  
 # 3000000 "Lexer.fs"

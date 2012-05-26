@@ -12,7 +12,7 @@ open Microsoft.FSharp.Compiler.Reflection
 %token <string> Kw_select
 %token <string> Kw_from
 %token <string> Lparen
-%token <string> EOF
+%token <unit> EOF
 %token <string> Rparen
 %token <string> Globalvar
 %token <string> Localvar

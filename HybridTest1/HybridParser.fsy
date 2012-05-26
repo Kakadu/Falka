@@ -8,7 +8,7 @@ open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Reflection
 
 %}
-%token <string> EOF
+%token <unit> EOF
 %token <string> Operator
 %token <float> Number
 

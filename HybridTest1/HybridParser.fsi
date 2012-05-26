@@ -3,7 +3,7 @@ module GeneratedParser.Yacc
 type token = 
   | Number of (float)
   | Operator of (string)
-  | EOF of (string)
+  | EOF of (unit)
 type tokenId = 
     | TOKEN_Number
     | TOKEN_Operator
